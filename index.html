@@ -500,6 +500,11 @@
             'อยุธยา': 'พระนครศรีอยุธยา',
             'โคราช': 'นครราชสีมา',
             'ปักธงชัย': 'นครราชสีมา',
+            'ปากช่อง': 'นครราชสีมา',
+            'พิมาย': 'นครราชสีมา',
+            'สูงเนิน': 'นครราชสีมา',
+            'ขามทะเลสอ': 'นครราชสีมา',
+            'โชคชัย': 'นครราชสีมา',
             'เเจ้งวัฒนะ': 'กรุงเทพมหานคร',
             'กาฬสิน': 'กาฬสินธุ์',
             'กาฬสินธิ์': 'กาฬสินธุ์',
@@ -524,7 +529,11 @@
             'เชียงใหม่_เมืองเชียงใหม่': [18.7883, 98.9853],
             'เชียงใหม่_แม่ริม': [18.9142, 98.9431],
             'ชลบุรี_เมืองชลบุรี': [13.3611, 100.9847],
-            'ชลบุรี_ศรีราชา': [13.1738, 100.9312]
+            'ชลบุรี_ศรีราชา': [13.1738, 100.9312],
+            'นครราชสีมา_เมืองนครราชสีมา': [14.9799, 102.0978],
+            'นครราชสีมา_ปักธงชัย': [14.7183, 102.0234],
+            'นครราชสีมา_ปากช่อง': [14.6860, 101.4018],
+            'นครราชสีมา_พิมาย': [15.2217, 102.4939]
         };
 
         window.addEventListener('DOMContentLoaded', function() {
@@ -792,15 +801,18 @@
 
                 const provAgg = {};
                 filteredData.forEach(d => {
-                    if (!provAgg[d.province]) {
-                        const baseCoord = PROVINCE_COORDS[d.province] || [13.7563, 100.5018];
-                        provAgg[d.province] = {
+                    const normProv = normalizeProvinceName(d.province);
+                    if (normProv === 'ไม่ระบุ') return;
+
+                    if (!provAgg[normProv]) {
+                        const baseCoord = PROVINCE_COORDS[normProv] || PROVINCE_COORDS['กรุงเทพมหานคร'];
+                        provAgg[normProv] = {
                             count: 0,
                             lat: baseCoord[0],
                             lng: baseCoord[1]
                         };
                     }
-                    provAgg[d.province].count++;
+                    provAgg[normProv].count++;
                 });
 
                 const counts = Object.values(provAgg).map(p => p.count);
@@ -846,20 +858,40 @@
 
         function normalizeProvinceName(rawProvince) {
             if (!rawProvince) return 'ไม่ระบุ';
-            let clean = String(rawProvince).trim().replace(/[0-9_.]/g, '');
 
+            // Clean unicode whitespace (\u00A0, \u200B), tabs, carriage returns, etc.
+            let clean = String(rawProvince)
+                .replace(/[\u200B-\u200D\uFEFF\u00A0\t\r\n]/g, '')
+                .trim();
+
+            // Strip prefix words like "จังหวัด", "จ.", "จ "
+            clean = clean.replace(/^(จังหวัด|จ\.|จ\s+)/i, '').trim();
+            clean = clean.replace(/[0-9_.]/g, '').trim();
+
+            if (!clean) return 'ไม่ระบุ';
+
+            // 1. Alias Lookup
             if (PROVINCE_ALIASES[clean]) return PROVINCE_ALIASES[clean];
+
+            // 2. Direct Key Lookup in PROVINCE_COORDS
             if (PROVINCE_COORDS[clean]) return clean;
 
+            // 3. Exact Substring matching against known 77 provinces
             const allProvinces = Object.keys(PROVINCE_COORDS);
             for (const prov of allProvinces) {
-                if (clean.includes(prov) || prov.includes(clean)) {
+                if (clean.includes(prov)) {
                     return prov;
                 }
             }
 
-            clean = clean.replace(/^(จ\.|จังหวัด)/, '').trim();
-            if (PROVINCE_COORDS[clean]) return clean;
+            // 4. Safe reverse containment check (only for long strings > 3 chars)
+            if (clean.length > 3) {
+                for (const prov of allProvinces) {
+                    if (prov.includes(clean)) {
+                        return prov;
+                    }
+                }
+            }
 
             return clean;
         }
@@ -987,7 +1019,9 @@
         }
 
         function renderEpiCurveChart() {
-            const ctx = document.getElementById('epiCurveChart').getContext('2d');
+            const canvas = document.getElementById('epiCurveChart');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
             if (chartInstances.epiCurve) chartInstances.epiCurve.destroy();
 
             const dateCounts = {};
@@ -1048,7 +1082,9 @@
         }
 
         function renderProvinceChart() {
-            const ctx = document.getElementById('provinceChart').getContext('2d');
+            const canvas = document.getElementById('provinceChart');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
             if (chartInstances.province) chartInstances.province.destroy();
 
             const provinceCounts = {};
@@ -1085,7 +1121,9 @@
         }
 
         function renderAgeGroupChart() {
-            const ctx = document.getElementById('ageGroupChart').getContext('2d');
+            const canvas = document.getElementById('ageGroupChart');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
             if (chartInstances.ageGroup) chartInstances.ageGroup.destroy();
 
             const ageGroups = { '0-14 ปี': 0, '15-24 ปี': 0, '25-44 ปี': 0, '45-64 ปี': 0, '65 ปีขึ้นไป': 0, 'ไม่ระบุ': 0 };
@@ -1123,7 +1161,9 @@
         }
 
         function renderRiskFactorChart() {
-            const ctx = document.getElementById('riskFactorChart').getContext('2d');
+            const canvas = document.getElementById('riskFactorChart');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
             if (chartInstances.riskFactor) chartInstances.riskFactor.destroy();
 
             const riskCounts = {};
