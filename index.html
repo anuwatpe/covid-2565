@@ -43,7 +43,6 @@
     <!-- ESRI Leaflet & Leaflet GIS Engine -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="https://unpkg.com/esri-leaflet@3.0.12/dist/esri-leaflet.js"></script>
 
     <style>
         body {
@@ -267,7 +266,7 @@
                         <span>คำอธิบายสัญลักษณ์</span>
                     </div>
                     <div id="map-legend-content" class="space-y-1">
-                        <!-- Map Legend will be dynamically generated here -->
+                        <!-- Map Legend dynamically generated -->
                     </div>
                 </div>
             </div>
@@ -353,7 +352,6 @@
                 </div>
 
                 <div class="flex items-center gap-3">
-                    <!-- Search Input -->
                     <div class="relative w-full sm:w-64">
                         <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
                         <input type="text" id="table-search" placeholder="ค้นหาจังหวัด, ปัจจัยเสี่ยง..." 
@@ -362,7 +360,6 @@
                 </div>
             </div>
 
-            <!-- Table Container -->
             <div class="overflow-x-auto rounded-xl border border-slate-700/50">
                 <table class="w-full text-left text-xs">
                     <thead class="bg-slate-900/80 text-slate-300 font-semibold uppercase tracking-wider border-b border-slate-700/80">
@@ -376,18 +373,15 @@
                         </tr>
                     </thead>
                     <tbody id="table-body" class="divide-y divide-slate-700/40 text-slate-300">
-                        <!-- Table rows injected via JavaScript -->
                     </tbody>
                 </table>
             </div>
 
-            <!-- Pagination Bar -->
             <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2 text-xs text-slate-400">
                 <div id="table-pagination-info">
                     แสดง 0 - 0 จากทั้งหมด 0 รายการ
                 </div>
                 <div class="flex items-center space-x-1" id="table-pagination-controls">
-                    <!-- Dynamic Pagination Buttons -->
                 </div>
             </div>
         </section>
@@ -401,27 +395,22 @@
         </div>
     </footer>
 
-    <!-- Application Script Engine (GitHub Pages Dedicated) -->
+    <!-- Application Script Engine -->
     <script>
-        // Direct Published Google Sheets CSV Endpoint
         const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQYLYrfPcP7SOaB-4zUAR5QWTHn3PRH_zsLQWJt-6oExzlrEkxyw2peO8igQJd0Y7rm-V_vgcBA2lua/pub?output=csv';
 
-        // State Management
         let rawData = [];
         let filteredData = [];
         let chartInstances = {};
         
-        // ESRI Map State
         let mapInstance = null;
         let mapMarkersLayer = null;
-        let currentMapMode = 'district'; // 'district' or 'province'
+        let currentMapMode = 'district';
 
-        // Table State
         let currentPage = 1;
         const pageSize = 10;
         let searchQuery = '';
 
-        // Complete 77 Thailand Provinces Coordinates Lookup Engine (Centroid Lat, Lng)
         const PROVINCE_COORDS = {
             'กรุงเทพมหานคร': [13.7563, 100.5018],
             'กระบี่': [8.0863, 98.9063],
@@ -502,9 +491,25 @@
             'อุบลราชธานี': [15.2448, 104.8473]
         };
 
-        // Known District Coordinates Lookup Dictionary
+        const PROVINCE_ALIASES = {
+            'กทม': 'กรุงเทพมหานคร',
+            'กทม.': 'กรุงเทพมหานคร',
+            'กรุงเทพ': 'กรุงเทพมหานคร',
+            'กรุงเทพฯ': 'กรุงเทพมหานคร',
+            'กรุงเทพมหานครฯ': 'กรุงเทพมหานคร',
+            'อยุธยา': 'พระนครศรีอยุธยา',
+            'โคราช': 'นครราชสีมา',
+            'ปักธงชัย': 'นครราชสีมา',
+            'เเจ้งวัฒนะ': 'กรุงเทพมหานคร',
+            'กาฬสิน': 'กาฬสินธุ์',
+            'กาฬสินธิ์': 'กาฬสินธุ์',
+            'ขอนเเก่น': 'ขอนแก่น',
+            'เชียงใหม': 'เชียงใหม่',
+            'ชลบุร': 'ชลบุรี',
+            'ภูเกต': 'ภูเก็ต'
+        };
+
         const KNOWN_DISTRICT_COORDS = {
-            // กาฬสินธุ์
             'กาฬสินธุ์_เมืองกาฬสินธุ์': [16.4322, 103.5061],
             'กาฬสินธุ์_ยางตลาด': [16.3985, 103.3820],
             'กาฬสินธุ์_กมลาไสย': [16.3380, 103.5761],
@@ -513,52 +518,15 @@
             'กาฬสินธุ์_สหัสขันธ์': [16.7161, 103.5204],
             'กาฬสินธุ์_ห้วยเม็ก': [16.5888, 103.2355],
             'กาฬสินธุ์_หนองกุงศรี': [16.6508, 103.3032],
-            'กาฬสินธุ์_ท่าคันโท': [16.9602, 103.2361],
-            'กาฬสินธุ์_นามนต์': [16.5702, 103.7741],
-            'กาฬสินธุ์_ห้วยผึ้ง': [16.6348, 103.8980],
-            'กาฬสินธุ์_ร่องคำ': [16.2625, 103.7408],
-            'กาฬสินธุ์_คำม่วง': [16.9452, 103.6552],
-            'กาฬสินธุ์_เขาวง': [16.6917, 104.0894],
-            'กาฬสินธุ์_สามชัย': [16.8903, 103.5323],
-            'กาฬสินธุ์_นาคู': [16.7410, 104.0483],
-            'กาฬสินธุ์_ดอนจาน': [16.3683, 103.6622],
-            'กาฬสินธุ์_ฆ้องชัย': [16.2818, 103.4568],
-
-            // ขอนแก่น
             'ขอนแก่น_เมืองขอนแก่น': [16.4419, 102.8360],
             'ขอนแก่น_บ้านไผ่': [16.0617, 102.7302],
             'ขอนแก่น_ชุมแพ': [16.5447, 102.0988],
-            'ขอนแก่น_น้ำพอง': [16.7032, 102.8720],
-            'ขอนแก่น_กระนวน': [16.7061, 103.0782],
-            'ขอนแก่น_หนองเรือ': [16.4952, 102.4308],
-
-            // เชียงใหม่
             'เชียงใหม่_เมืองเชียงใหม่': [18.7883, 98.9853],
             'เชียงใหม่_แม่ริม': [18.9142, 98.9431],
-            'เชียงใหม่_สันทราย': [18.8475, 99.0436],
-            'เชียงใหม่_หางดง': [18.6868, 98.9172],
-            'เชียงใหม่_สันกำแพง': [18.7453, 99.1215],
-            'เชียงใหม่_ฝาง': [19.9168, 99.2132],
-
-            // ชลบุรี
             'ชลบุรี_เมืองชลบุรี': [13.3611, 100.9847],
-            'ชลบุรี_ศรีราชา': [13.1738, 100.9312],
-            'ชลบุรี_บางละมุง': [12.9772, 100.9255],
-            'ชลบุรี_สัตหีบ': [12.6662, 100.9022],
-            'ชลบุรี_บ้านบึง': [13.3082, 101.1118],
-
-            // ภูเก็ต
-            'ภูเก็ต_เมืองภูเก็ต': [7.8804, 98.3923],
-            'ภูเก็ต_กะทู้': [7.9171, 98.3331],
-            'ภูเก็ต_ถลาง': [8.0289, 98.3331],
-
-            // สงขลา
-            'สงขลา_เมืองสงขลา': [7.1988, 100.5951],
-            'สงขลา_หาดใหญ่': [7.0084, 100.4767],
-            'สงขลา_สะเดา': [6.6385, 100.4231]
+            'ชลบุรี_ศรีราชา': [13.1738, 100.9312]
         };
 
-        // Initialize on DOM Ready
         window.addEventListener('DOMContentLoaded', function() {
             if (window.lucide) lucide.createIcons();
             initEsriMap();
@@ -566,9 +534,49 @@
             fetchAndProcessData();
         });
 
-        /**
-         * Fetch and Process Data from Google Sheets CSV
-         */
+        function initEsriMap() {
+            if (mapInstance) return;
+            mapInstance = L.map('esri-map', {
+                center: [13.7563, 100.5018],
+                zoom: 6,
+                zoomControl: true
+            });
+
+            const esriDark = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+                attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ',
+                maxZoom: 16
+            });
+
+            const cartoDark = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; OpenStreetMap &copy; CARTO',
+                maxZoom: 19
+            });
+
+            esriDark.addTo(mapInstance);
+            esriDark.on('tileerror', function() {
+                mapInstance.removeLayer(esriDark);
+                cartoDark.addTo(mapInstance);
+            });
+
+            mapMarkersLayer = L.layerGroup().addTo(mapInstance);
+        }
+
+        function setupEventListeners() {
+            document.getElementById('filter-date-start').addEventListener('change', applyFilters);
+            document.getElementById('filter-date-end').addEventListener('change', applyFilters);
+            document.getElementById('filter-province').addEventListener('change', applyFilters);
+            document.getElementById('filter-risk').addEventListener('change', applyFilters);
+
+            const searchInput = document.getElementById('table-search');
+            if (searchInput) {
+                searchInput.addEventListener('input', function(e) {
+                    searchQuery = e.target.value.toLowerCase().trim();
+                    currentPage = 1;
+                    renderTable();
+                });
+            }
+        }
+
         function fetchAndProcessData() {
             const statusDot = document.getElementById('status-dot');
             const lastUpdateText = document.getElementById('last-update-text');
@@ -584,235 +592,195 @@
                 skipEmptyLines: true,
                 complete: function(results) {
                     if (refreshIcon) refreshIcon.classList.remove('animate-spin');
-                    if (results && results.data && results.data.length > 0) {
-                        if (statusDot) statusDot.className = 'w-2 h-2 rounded-full bg-emerald-400';
-                        if (lastUpdateText) lastUpdateText.textContent = `อัปเดตล่าสุด: ${new Date().toLocaleTimeString('th-TH')} น. (${results.data.length.toLocaleString('th-TH')} รายการ)`;
-                        
+                    if (results.data && results.data.length > 0) {
                         rawData = normalizeDataset(results.data);
                         populateFilterOptions(rawData);
                         applyFilters();
+
+                        if (statusDot) statusDot.className = 'w-2 h-2 rounded-full bg-emerald-400';
+                        if (lastUpdateText) {
+                            const now = new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
+                            lastUpdateText.textContent = `อัปเดตล่าสุด ${now} น. (${rawData.length.toLocaleString('th-TH')} รายการ)`;
+                        }
                     } else {
-                        console.warn('Empty data received from CSV, using fallback dataset.');
                         useFallbackDataset();
                     }
                 },
                 error: function(err) {
-                    console.error('Error fetching/parsing CSV:', err);
-                    if (refreshIcon) refreshIcon.classList.remove('animate-spin');
+                    console.error('CSV Parsing Error:', err);
                     useFallbackDataset();
                 }
             });
         }
 
-        /**
-         * Initialize ESRI Leaflet Dark Canvas Map Engine
-         */
-        function initEsriMap() {
-            if (mapInstance) return;
-
-            mapInstance = L.map('esri-map', {
-                center: [13.7367, 100.5231], // Centered on Thailand
-                zoom: 6,
-                zoomControl: true
-            });
-
-            // ESRI Dark Gray Basemap Tile Layer with CartoDB Dark Matter Fallback
-            try {
-                if (window.L && L.esri && L.esri.basemapLayer) {
-                    L.esri.basemapLayer('DarkGray').addTo(mapInstance);
-                    L.esri.basemapLayer('DarkGrayLabels').addTo(mapInstance);
-                } else {
-                    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-                        attribution: '&copy; OpenStreetMap &copy; CARTO',
-                        maxZoom: 19
-                    }).addTo(mapInstance);
-                }
-            } catch (e) {
-                L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-                    attribution: '&copy; OpenStreetMap &copy; CARTO',
-                    maxZoom: 19
-                }).addTo(mapInstance);
-            }
-
-            mapMarkersLayer = L.layerGroup().addTo(mapInstance);
-        }
-
-        function setupEventListeners() {
-            document.getElementById('filter-date-start').addEventListener('change', applyFilters);
-            document.getElementById('filter-date-end').addEventListener('change', applyFilters);
-            document.getElementById('filter-province').addEventListener('change', applyFilters);
-            document.getElementById('filter-risk').addEventListener('change', applyFilters);
-            
-            document.getElementById('table-search').addEventListener('input', function(e) {
-                searchQuery = e.target.value.toLowerCase().trim();
-                currentPage = 1;
-                renderTable();
-            });
-        }
-
-        /**
-         * Standardize Heterogeneous Thai/English Column Headers
-         */
         function normalizeDataset(data) {
-            return data.map(row => {
-                const dateVal = row.announce_date || row.txn_date || row['วันประกาศ'] || row.date || row.Date || '';
-                const provinceVal = row.province || row.province_of_onset || row.province_of_isolation || row['จังหวัด'] || row.Province || 'ไม่ระบุ';
-                const districtVal = row.district_of_onset || row.district || row.amphoe || row['อำเภอ'] || row['district_of_onset'] || 'ไม่ระบุ';
-                const genderVal = row.sex || row.gender || row['เพศ'] || row.Gender || 'ไม่ระบุ';
-                const ageVal = row.age !== undefined && row.age !== null ? parseFloat(row.age) : (parseFloat(row['อายุ']) || null);
-                const riskVal = row.risk || row.risk_type || row['ปัจจัยเสี่ยง'] || row.Risk || 'อื่นๆ / อยู่ระหว่างสอบสวน';
+            return data.map((row, index) => {
+                const getVal = (...keys) => {
+                    for (const k of keys) {
+                        const matchedKey = Object.keys(row).find(rk => rk.trim().toLowerCase() === k.toLowerCase());
+                        if (matchedKey && row[matchedKey] !== undefined && row[matchedKey] !== null) {
+                            return String(row[matchedKey]).trim();
+                        }
+                    }
+                    return '';
+                };
 
-                const parsedDate = parseStandardDate(dateVal);
+                const rawDate = getVal('announce_date', 'txn_date', 'date', 'วันที่');
+                const rawProv = getVal('province', 'province_of_onset', 'จังหวัด');
+                const rawDist = getVal('district_of_onset', 'district', 'อำเภอ', 'เขต');
+                const rawSex = getVal('sex', 'gender', 'เพศ');
+                const rawAge = getVal('age', 'อายุ');
+                const rawRisk = getVal('risk', 'risk_factor', 'ปัจจัยเสี่ยง');
+
+                const normProv = normalizeProvinceName(rawProv);
+                const ageNum = parseInt(rawAge, 10);
+                const cleanAge = isNaN(ageNum) ? null : ageNum;
+                const cleanSex = rawSex || 'ไม่ระบุ';
+                const cleanRisk = rawRisk || 'ไม่ระบุ';
+
+                let dateStr = 'ไม่ระบุ';
+                if (rawDate) {
+                    const parts = rawDate.split(/[-/.]/);
+                    if (parts.length === 3) {
+                        let y = parseInt(parts[0], 10);
+                        let m = parseInt(parts[1], 10);
+                        let d = parseInt(parts[2], 10);
+                        if (parts[0].length <= 2 && parts[2].length === 4) {
+                            d = parseInt(parts[0], 10);
+                            m = parseInt(parts[1], 10);
+                            y = parseInt(parts[2], 10);
+                        }
+                        if (y > 2500) y -= 543;
+                        if (y && m && d) {
+                            dateStr = `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+                        }
+                    } else {
+                        dateStr = rawDate;
+                    }
+                }
+
+                const coords = getCoordinate(normProv, rawDist, index);
 
                 return {
-                    date: parsedDate,
-                    dateStr: parsedDate ? parsedDate.toISOString().split('T')[0] : 'ไม่ระบุ',
-                    province: String(provinceVal).trim(),
-                    district: String(districtVal).trim(),
-                    gender: String(genderVal).trim(),
-                    age: !isNaN(ageVal) && ageVal >= 0 && ageVal <= 120 ? ageVal : null,
-                    risk: String(riskVal).trim(),
-                    raw: row
+                    id: index + 1,
+                    dateStr: dateStr,
+                    province: normProv,
+                    district: rawDist || 'ไม่ระบุ',
+                    gender: cleanSex,
+                    age: cleanAge,
+                    risk: cleanRisk,
+                    lat: coords[0],
+                    lng: coords[1]
                 };
-            }).filter(item => item.province !== '');
-        }
-
-        /**
-         * Date Formatter handling Thai Buddhist Era & ISO Formats
-         */
-        function parseStandardDate(dateStr) {
-            if (!dateStr) return null;
-            if (dateStr instanceof Date && !isNaN(dateStr)) return dateStr;
-
-            const str = String(dateStr).trim();
-            
-            // Format YYYY-MM-DD
-            if (/^\d{4}-\d{2}-\d{2}/.test(str)) {
-                const parts = str.split('-');
-                let year = parseInt(parts[0]);
-                if (year > 2400) year -= 543; // Buddhist Era Conversion
-                return new Date(year, parseInt(parts[1]) - 1, parseInt(parts[2]));
-            }
-
-            // Format DD/MM/YYYY
-            if (str.includes('/')) {
-                const parts = str.split('/');
-                if (parts.length === 3) {
-                    let day = parseInt(parts[0]);
-                    let month = parseInt(parts[1]) - 1;
-                    let year = parseInt(parts[2]);
-                    if (year > 2400) year -= 543;
-                    if (year < 100) year += 2000;
-                    return new Date(year, month, day);
-                }
-            }
-
-            const parsed = new Date(str);
-            return !isNaN(parsed) ? parsed : null;
+            });
         }
 
         function populateFilterOptions(data) {
-            const provinceSelect = document.getElementById('filter-province');
+            const provSelect = document.getElementById('filter-province');
             const riskSelect = document.getElementById('filter-risk');
 
-            const provinces = [...new Set(data.map(d => d.province))].sort((a,b) => a.localeCompare(b, 'th'));
-            provinceSelect.innerHTML = '<option value="ALL">ทุกจังหวัด</option>';
-            provinces.forEach(p => {
-                if (p) provinceSelect.innerHTML += `<option value="${p}">${p}</option>`;
+            const currentProv = provSelect.value;
+            const currentRisk = riskSelect.value;
+
+            const provinces = new Set();
+            const risks = new Set();
+
+            data.forEach(d => {
+                if (d.province && d.province !== 'ไม่ระบุ') provinces.add(d.province);
+                if (d.risk && d.risk !== 'ไม่ระบุ') risks.add(d.risk);
             });
 
-            const risks = [...new Set(data.map(d => d.risk))].sort((a,b) => a.localeCompare(b, 'th'));
-            riskSelect.innerHTML = '<option value="ALL">ทุกปัจจัยเสี่ยง</option>';
-            risks.forEach(r => {
-                if (r) riskSelect.innerHTML += `<option value="${r}">${r}</option>`;
+            provSelect.innerHTML = '<option value="ALL">ทุกจังหวัด</option>';
+            Array.from(provinces).sort().forEach(p => {
+                const opt = document.createElement('option');
+                opt.value = p;
+                opt.textContent = p;
+                provSelect.appendChild(opt);
             });
+            provSelect.value = provinces.has(currentProv) ? currentProv : 'ALL';
+
+            riskSelect.innerHTML = '<option value="ALL">ทุกปัจจัยเสี่ยง</option>';
+            Array.from(risks).sort().forEach(r => {
+                const opt = document.createElement('option');
+                opt.value = r;
+                opt.textContent = r;
+                riskSelect.appendChild(opt);
+            });
+            riskSelect.value = risks.has(currentRisk) ? currentRisk : 'ALL';
         }
 
         function applyFilters() {
-            const startDateVal = document.getElementById('filter-date-start').value;
-            const endDateVal = document.getElementById('filter-date-end').value;
-            const selectedProvince = document.getElementById('filter-province').value;
-            const selectedRisk = document.getElementById('filter-risk').value;
+            const startDate = document.getElementById('filter-date-start').value;
+            const endDate = document.getElementById('filter-date-end').value;
+            const provFilter = document.getElementById('filter-province').value;
+            const riskFilter = document.getElementById('filter-risk').value;
 
-            const startDate = startDateVal ? new Date(startDateVal) : null;
-            const endDate = endDateVal ? new Date(endDateVal) : null;
-            if (endDate) endDate.setHours(23, 59, 59, 999);
-
-            filteredData = rawData.filter(item => {
-                if (startDate && item.date && item.date < startDate) return false;
-                if (endDate && item.date && item.date > endDate) return false;
-                if (selectedProvince !== 'ALL' && item.province !== selectedProvince) return false;
-                if (selectedRisk !== 'ALL' && item.risk !== selectedRisk) return false;
+            filteredData = rawData.filter(d => {
+                if (startDate && d.dateStr !== 'ไม่ระบุ' && d.dateStr < startDate) return false;
+                if (endDate && d.dateStr !== 'ไม่ระบุ' && d.dateStr > endDate) return false;
+                if (provFilter !== 'ALL' && d.province !== provFilter) return false;
+                if (riskFilter !== 'ALL' && d.risk !== riskFilter) return false;
                 return true;
             });
 
             currentPage = 1;
             updateDashboardMetrics();
             renderCharts();
-            renderEsriMap();
+            updateEsriMap();
             renderTable();
         }
 
-        /**
-         * Switch Map Display Mode between Individual District Cases vs Province Proportional Magnitude
-         */
         function switchMapMode(mode) {
             currentMapMode = mode;
-            const btnDistrict = document.getElementById('btn-map-district');
-            const btnProvince = document.getElementById('btn-map-province');
+            const btnDist = document.getElementById('btn-map-district');
+            const btnProv = document.getElementById('btn-map-province');
 
             if (mode === 'district') {
-                btnDistrict.className = "px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 bg-teal-500 text-slate-950 font-semibold shadow";
-                btnProvince.className = "px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 text-slate-400 hover:text-slate-200";
+                btnDist.className = 'px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 bg-teal-500 text-slate-950 font-semibold shadow';
+                btnProv.className = 'px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 text-slate-400 hover:text-slate-200';
             } else {
-                btnProvince.className = "px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 bg-teal-500 text-slate-950 font-semibold shadow";
-                btnDistrict.className = "px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 text-slate-400 hover:text-slate-200";
+                btnProv.className = 'px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 bg-teal-500 text-slate-950 font-semibold shadow';
+                btnDist.className = 'px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 text-slate-400 hover:text-slate-200';
             }
 
-            renderEsriMap();
+            updateEsriMap();
         }
 
-        /**
-         * Render GIS Map Layers based on Active Mode
-         */
-        function renderEsriMap() {
+        function updateEsriMap() {
             if (!mapInstance || !mapMarkersLayer) return;
             mapMarkersLayer.clearLayers();
 
+            const legendTitle = document.getElementById('map-legend-title');
             const legendContent = document.getElementById('map-legend-content');
 
             if (currentMapMode === 'district') {
-                // Mode 1: Individual Case Points based on district_of_onset
-                legendContent.innerHTML = `
-                    <div class="flex items-center gap-2">
-                        <span class="w-3 h-3 rounded-full bg-teal-400 border border-teal-200 shadow-sm inline-block"></span>
-                        <span>ผู้ป่วย 1 ราย (ตามอำเภอ/เขต)</span>
-                    </div>
-                    <p class="text-[10px] text-slate-400 pt-1">จุดกระจายตัวเชิงพื้นที่ตามเขต/อำเภอระบุใน district_of_onset</p>
-                `;
+                if (legendTitle) legendTitle.innerHTML = '<i data-lucide="crosshair" class="w-3.5 h-3.5"></i> <span>จุดเคสรายบุคคล</span>';
+                if (legendContent) {
+                    legendContent.innerHTML = `
+                        <div class="flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-teal-400 border border-teal-200 inline-block"></span>
+                            <span>ตำแหน่งเกิดโรค (1 เคส)</span>
+                        </div>
+                    `;
+                }
 
-                filteredData.forEach((item, idx) => {
-                    const coords = getCoordinate(item.province, item.district, idx);
-                    
-                    const marker = L.circleMarker(coords, {
+                filteredData.forEach(d => {
+                    const marker = L.circleMarker([d.lat, d.lng], {
                         radius: 5,
                         fillColor: '#2dd4bf',
-                        color: '#0d9488',
-                        weight: 1.5,
+                        color: '#134e4a',
+                        weight: 1,
                         opacity: 0.9,
                         fillOpacity: 0.75
                     });
 
                     marker.bindPopup(`
                         <div class="space-y-1 text-xs">
-                            <div class="font-bold text-teal-300 border-b border-slate-700 pb-1">
-                                เคสเฝ้าระวัง #${idx + 1}
-                            </div>
-                            <div><span class="text-slate-400">วันที่:</span> ${item.dateStr}</div>
-                            <div><span class="text-slate-400">อำเภอ/เขต (district_of_onset):</span> <strong class="text-white">${item.district}</strong></div>
-                            <div><span class="text-slate-400">จังหวัด:</span> ${item.province}</div>
-                            <div><span class="text-slate-400">เพศ/อายุ:</span> ${item.gender} (${item.age !== null ? item.age + ' ปี' : 'ไม่ระบุ'})</div>
-                            <div><span class="text-slate-400">ปัจจัยเสี่ยง:</span> <span class="text-amber-300">${item.risk}</span></div>
+                            <div class="font-bold text-teal-400 text-sm border-b border-slate-700 pb-1">${d.province}</div>
+                            <div><strong>อำเภอ/เขต:</strong> ${d.district}</div>
+                            <div><strong>วันที่แจ้ง:</strong> ${d.dateStr}</div>
+                            <div><strong>เพศ/อายุ:</strong> ${d.gender} (${d.age !== null ? d.age + ' ปี' : 'ไม่ระบุ'})</div>
+                            <div><strong>ปัจจัยเสี่ยง:</strong> ${d.risk}</div>
                         </div>
                     `);
 
@@ -820,45 +788,52 @@
                 });
 
             } else {
-                // Mode 2: Aggregate Proportional Circles by Province
-                const provinceCounts = {};
-                filteredData.forEach(item => {
-                    provinceCounts[item.province] = (provinceCounts[item.province] || 0) + 1;
+                if (legendTitle) legendTitle.innerHTML = '<i data-lucide="globe-2" class="w-3.5 h-3.5"></i> <span>ขนาดเคสรายจังหวัด</span>';
+
+                const provAgg = {};
+                filteredData.forEach(d => {
+                    if (!provAgg[d.province]) {
+                        const baseCoord = PROVINCE_COORDS[d.province] || [13.7563, 100.5018];
+                        provAgg[d.province] = {
+                            count: 0,
+                            lat: baseCoord[0],
+                            lng: baseCoord[1]
+                        };
+                    }
+                    provAgg[d.province].count++;
                 });
 
-                legendContent.innerHTML = `
-                    <div class="space-y-1">
-                        <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-rose-500 inline-block"></span> <span>ความชุกสูง (>20 เคส)</span></div>
-                        <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-amber-400 inline-block"></span> <span>ปานกลาง (6-20 เคส)</span></div>
-                        <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-indigo-400 inline-block"></span> <span>เฝ้าระวัง (1-5 เคส)</span></div>
-                    </div>
-                `;
+                const counts = Object.values(provAgg).map(p => p.count);
+                const maxCount = Math.max(...counts, 1);
 
-                Object.entries(provinceCounts).forEach(([province, count]) => {
-                    const baseCoords = PROVINCE_COORDS[province] || getHashCoords(province);
-                    
-                    // Radius scaling
-                    const radius = Math.min(Math.max(Math.sqrt(count) * 6, 8), 32);
-                    
-                    let fillColor = '#818cf8'; // Low
-                    let strokeColor = '#6366f1';
-                    if (count > 20) { fillColor = '#f43f5e'; strokeColor = '#e11d48'; }
-                    else if (count > 5) { fillColor = '#fbbf24'; strokeColor = '#d97706'; }
+                if (legendContent) {
+                    legendContent.innerHTML = `
+                        <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block"></span> <span>หนาแน่นมาก (>50% Max)</span></div>
+                        <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span> <span>ปานกลาง</span></div>
+                        <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-teal-400 inline-block"></span> <span>น้อย</span></div>
+                    `;
+                }
 
-                    const circle = L.circleMarker(baseCoords, {
+                Object.entries(provAgg).forEach(([provName, data]) => {
+                    const ratio = data.count / maxCount;
+                    const radius = Math.max(8, Math.min(35, Math.sqrt(data.count) * 4));
+                    let color = '#2dd4bf';
+                    if (ratio > 0.5) color = '#f43f5e';
+                    else if (ratio > 0.2) color = '#f59e0b';
+
+                    const circle = L.circleMarker([data.lat, data.lng], {
                         radius: radius,
-                        fillColor: fillColor,
-                        color: strokeColor,
-                        weight: 2,
+                        fillColor: color,
+                        color: '#0f172a',
+                        weight: 1.5,
                         opacity: 0.9,
-                        fillOpacity: 0.6
+                        fillOpacity: 0.65
                     });
 
                     circle.bindPopup(`
                         <div class="space-y-1 text-xs">
-                            <div class="font-bold text-slate-100 border-b border-slate-700 pb-1 text-sm">${province}</div>
-                            <div><span class="text-slate-400">จำนวนเคสสะสม:</span> <strong class="text-rose-400 text-sm">${count.toLocaleString('th-TH')} ราย</strong></div>
-                            <div class="text-[11px] text-slate-400 pt-1">ขนาดวงกลมแปรผันตามจำนวนเคสที่ได้รับแจ้งในระบบ</div>
+                            <div class="font-bold text-teal-400 text-sm border-b border-slate-700 pb-1">${provName}</div>
+                            <div><strong>จำนวนผู้ป่วยสะสม:</strong> <span class="text-rose-400 font-bold">${data.count.toLocaleString('th-TH')}</span> ราย</div>
                         </div>
                     `);
 
@@ -869,53 +844,59 @@
             if (window.lucide) lucide.createIcons();
         }
 
-        /**
-         * Dynamic Geocoder for Provinces/Districts
-         * Resolves Province -> District -> Micro-jitter per individual case
-         */
-        function getCoordinate(province, district, index) {
-            const cleanProv = String(province || '').trim();
-            const cleanDist = String(district || '').trim();
+        function normalizeProvinceName(rawProvince) {
+            if (!rawProvince) return 'ไม่ระบุ';
+            let clean = String(rawProvince).trim().replace(/[0-9_.]/g, '');
 
-            // 1. Find Base Province Coordinates
-            let provBase = PROVINCE_COORDS[cleanProv];
-            if (!provBase) {
-                // Fuzzy match for province
-                const matchedProvKey = Object.keys(PROVINCE_COORDS).find(p => cleanProv.includes(p) || p.includes(cleanProv));
-                provBase = matchedProvKey ? PROVINCE_COORDS[matchedProvKey] : getHashCoords(cleanProv);
+            if (PROVINCE_ALIASES[clean]) return PROVINCE_ALIASES[clean];
+            if (PROVINCE_COORDS[clean]) return clean;
+
+            const allProvinces = Object.keys(PROVINCE_COORDS);
+            for (const prov of allProvinces) {
+                if (clean.includes(prov) || prov.includes(clean)) {
+                    return prov;
+                }
             }
 
-            // 2. Resolve District Center Coordinates
-            let distCenter = null;
+            clean = clean.replace(/^(จ\.|จังหวัด)/, '').trim();
+            if (PROVINCE_COORDS[clean]) return clean;
 
-            // Direct lookup check
-            const distKey = `${cleanProv}_${cleanDist}`;
+            return clean;
+        }
+
+        function getCoordinate(province, district, index) {
+            const normalizedProv = normalizeProvinceName(province);
+            const cleanDist = String(district || '').trim();
+
+            let provBase = PROVINCE_COORDS[normalizedProv];
+            let isUnknownProvince = false;
+
+            if (!provBase) {
+                provBase = [13.7563, 100.5018];
+                isUnknownProvince = true;
+            }
+
+            let distCenter = null;
+            const distKey = `${normalizedProv}_${cleanDist}`;
+
             if (KNOWN_DISTRICT_COORDS[distKey]) {
                 distCenter = KNOWN_DISTRICT_COORDS[distKey];
             } else if (cleanDist && KNOWN_DISTRICT_COORDS[cleanDist]) {
                 distCenter = KNOWN_DISTRICT_COORDS[cleanDist];
-            } else if (!cleanDist || cleanDist === 'ไม่ระบุ' || cleanDist.includes('เมือง')) {
-                // Capital / Mueang District -> Stay very close to province center
-                const mueangAngle = (getHash(cleanDist || cleanProv) % 360) * (Math.PI / 180);
-                distCenter = [
-                    provBase[0] + Math.sin(mueangAngle) * 0.02,
-                    provBase[1] + Math.cos(mueangAngle) * 0.02
-                ];
+            } else if (!cleanDist || cleanDist === 'ไม่ระบุ' || cleanDist.includes('เมือง') || isUnknownProvince) {
+                distCenter = [provBase[0], provBase[1]];
             } else {
-                // Calculate deterministic spatial offset for any district relative to province center
                 const hash = getHash(cleanDist);
                 const angle = (hash % 360) * (Math.PI / 180);
-                // Radius distance between 0.08 deg to 0.30 deg (~8km to 30km spread from province center)
-                const radius = 0.08 + ((hash % 22) * 0.01);
+                const radius = 0.04 + ((hash % 15) * 0.008);
                 distCenter = [
                     provBase[0] + Math.sin(angle) * radius,
                     provBase[1] + Math.cos(angle) * radius
                 ];
             }
 
-            // 3. Add Micro-jitter for individual cases in the SAME district so points don't stack directly on top
-            const caseAngle = ((index * 137.5) % 360) * (Math.PI / 180); // Golden ratio angle dispersion
-            const caseJitterRadius = 0.002 + ((index % 7) * 0.0012); // ~200m - 800m dispersion
+            const caseAngle = ((index * 137.5) % 360) * (Math.PI / 180);
+            const caseJitterRadius = 0.0015 + ((index % 5) * 0.001);
 
             return [
                 distCenter[0] + Math.sin(caseAngle) * caseJitterRadius,
@@ -932,13 +913,6 @@
             return Math.abs(hash);
         }
 
-        function getHashCoords(str) {
-            const h = getHash(str);
-            const lat = 13.0 + ((h % 500) / 100);
-            const lng = 100.0 + (((h >> 2) % 500) / 100);
-            return [lat, lng];
-        }
-
         function resetFilters() {
             document.getElementById('filter-date-start').value = '';
             document.getElementById('filter-date-end').value = '';
@@ -950,10 +924,8 @@
         }
 
         function updateDashboardMetrics() {
-            // Total Cases
             document.getElementById('kpi-total-cases').textContent = filteredData.length.toLocaleString('th-TH');
 
-            // Top Province
             const provinceCounts = {};
             filteredData.forEach(d => {
                 provinceCounts[d.province] = (provinceCounts[d.province] || 0) + 1;
@@ -967,7 +939,6 @@
                 document.getElementById('kpi-top-province-count').textContent = '0 ราย';
             }
 
-            // Average Age
             const validAges = filteredData.filter(d => d.age !== null).map(d => d.age);
             if (validAges.length > 0) {
                 const avgAge = validAges.reduce((a,b) => a + b, 0) / validAges.length;
@@ -976,7 +947,6 @@
                 document.getElementById('kpi-avg-age').textContent = 'N/A';
             }
 
-            // Gender Ratio
             let males = 0, females = 0;
             filteredData.forEach(d => {
                 const g = d.gender.toLowerCase();
@@ -994,7 +964,6 @@
                 document.getElementById('kpi-gender-counts').textContent = 'ชาย 0 | หญิง 0';
             }
 
-            // Automated Epidemiological Executive Summary
             const topRiskEntry = Object.entries(filteredData.reduce((acc, curr) => {
                 acc[curr.risk] = (acc[curr.risk] || 0) + 1;
                 return acc;
@@ -1017,9 +986,6 @@
             renderRiskFactorChart();
         }
 
-        /**
-         * Chart 1: Epi Curve + 7-Day Moving Avg
-         */
         function renderEpiCurveChart() {
             const ctx = document.getElementById('epiCurveChart').getContext('2d');
             if (chartInstances.epiCurve) chartInstances.epiCurve.destroy();
@@ -1034,7 +1000,6 @@
             const sortedDates = Object.keys(dateCounts).sort();
             const counts = sortedDates.map(date => dateCounts[date]);
 
-            // 7-Day Moving Average Line Calculation
             const movingAverage = counts.map((val, idx, arr) => {
                 const start = Math.max(0, idx - 6);
                 const subset = arr.slice(start, idx + 1);
@@ -1082,9 +1047,6 @@
             });
         }
 
-        /**
-         * Chart 2: Top 10 Provinces
-         */
         function renderProvinceChart() {
             const ctx = document.getElementById('provinceChart').getContext('2d');
             if (chartInstances.province) chartInstances.province.destroy();
@@ -1122,9 +1084,6 @@
             });
         }
 
-        /**
-         * Chart 3: Demographics Age Group Distribution
-         */
         function renderAgeGroupChart() {
             const ctx = document.getElementById('ageGroupChart').getContext('2d');
             if (chartInstances.ageGroup) chartInstances.ageGroup.destroy();
@@ -1163,9 +1122,6 @@
             });
         }
 
-        /**
-         * Chart 4: Risk Factors Doughnut Chart
-         */
         function renderRiskFactorChart() {
             const ctx = document.getElementById('riskFactorChart').getContext('2d');
             if (chartInstances.riskFactor) chartInstances.riskFactor.destroy();
@@ -1203,9 +1159,6 @@
             });
         }
 
-        /**
-         * Line List Data Table Rendering
-         */
         function renderTable() {
             const tbody = document.getElementById('table-body');
             tbody.innerHTML = '';
@@ -1281,9 +1234,6 @@
             if (window.lucide) lucide.createIcons();
         }
 
-        /**
-         * Offline / Simulated Fallback Dataset
-         */
         function useFallbackDataset() {
             const statusDot = document.getElementById('status-dot');
             const lastUpdateText = document.getElementById('last-update-text');
@@ -1321,15 +1271,13 @@
             applyFilters();
         }
 
-        /**
-         * Export Active Table View to CSV File
-         */
         function exportFilteredCSV() {
             if (!filteredData || filteredData.length === 0) return;
 
             const exportRows = filteredData.map(d => ({
                 'Date': d.dateStr,
                 'Province': d.province,
+                'District': d.district,
                 'Gender': d.gender,
                 'Age': d.age !== null ? d.age : '',
                 'Risk': d.risk
