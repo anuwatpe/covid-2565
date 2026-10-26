@@ -43,6 +43,7 @@
     <!-- ESRI Leaflet & Leaflet GIS Engine -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
 
     <style>
         body {
@@ -241,17 +242,52 @@
                 </div>
 
                 <!-- Map Mode Switcher Buttons -->
-                <div class="flex items-center bg-slate-900/90 p-1 rounded-xl border border-slate-700/80 text-xs font-medium self-start sm:self-auto shadow-inner">
+                <div class="flex items-center bg-slate-900/90 p-1 rounded-xl border border-slate-700/80 text-xs font-medium self-start sm:self-auto shadow-inner flex-wrap gap-1">
                     <button id="btn-map-district" onclick="switchMapMode('district')" 
                         class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 bg-teal-500 text-slate-950 font-semibold shadow">
                         <i data-lucide="crosshair" class="w-3.5 h-3.5"></i>
-                        <span>จุดเกิดโรครายบุคคล (district_of_onset)</span>
+                        <span>จุดเกิดโรครายบุคคล</span>
                     </button>
                     <button id="btn-map-province" onclick="switchMapMode('province')" 
                         class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 text-slate-400 hover:text-slate-200">
                         <i data-lucide="globe-2" class="w-3.5 h-3.5"></i>
-                        <span>ขนาดและสัดส่วนระบาด (ระดับจังหวัด)</span>
+                        <span>ขนาดและสัดส่วนระบาด</span>
                     </button>
+                    <button id="btn-map-hotspot" onclick="switchMapMode('hotspot')" 
+                        class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 text-slate-400 hover:text-slate-200">
+                        <i data-lucide="flame" class="w-3.5 h-3.5 text-rose-400"></i>
+                        <span>วิเคราะห์ Hot-spot (Density & Z-Score)</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Hotspot Analysis Executive Summary Panel -->
+            <div id="hotspot-analysis-panel" class="hidden bg-slate-900/90 border border-rose-500/30 rounded-xl p-3 text-xs text-slate-300 transition-all">
+                <div class="flex items-center justify-between border-b border-slate-700/60 pb-1.5 mb-2">
+                    <span class="font-semibold text-rose-400 flex items-center gap-1.5">
+                        <i data-lucide="flame" class="w-4 h-4 text-rose-500 animate-pulse"></i>
+                        สรุปการวิเคราะห์พื้นที่กระจุกตัวความเสี่ยงสูง (Getis-Ord / Z-Score Spatial Analysis)
+                    </span>
+                    <span id="hotspot-count-badge" class="px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/40 text-[10px] font-mono">
+                        พบ 0 พื้นที่ Hotspot
+                    </span>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3" id="hotspot-metrics-grid">
+                    <div class="bg-slate-800/80 p-2.5 rounded-lg border border-slate-700/50">
+                        <div class="text-[10px] text-slate-400 uppercase tracking-wider">พื้นที่ Hotspot สูงสุด (Z ≥ 1.65)</div>
+                        <div class="text-sm font-bold text-rose-400 truncate mt-0.5" id="hs-top-area">-</div>
+                        <div class="text-[10px] text-slate-400 mt-0.5" id="hs-top-score">Z-Score: 0.00</div>
+                    </div>
+                    <div class="bg-slate-800/80 p-2.5 rounded-lg border border-slate-700/50">
+                        <div class="text-[10px] text-slate-400 uppercase tracking-wider">ความหนาแน่นผู้ป่วยเฉลี่ยต่อพื้นที่</div>
+                        <div class="text-sm font-bold text-amber-300 mt-0.5" id="hs-avg-density">0 เคส/พื้นที่</div>
+                        <div class="text-[10px] text-slate-400 mt-0.5" id="hs-std-dev">ค่าเบี่ยงเบนมาตรฐาน (σ): 0.00</div>
+                    </div>
+                    <div class="bg-slate-800/80 p-2.5 rounded-lg border border-slate-700/50">
+                        <div class="text-[10px] text-slate-400 uppercase tracking-wider">ระดับนัยสำคัญทางสถิติ</div>
+                        <div class="text-sm font-bold text-teal-300 mt-0.5" id="hs-confidence-level">99% Confidence</div>
+                        <div class="text-[10px] text-slate-400 mt-0.5">การกระจุกตัวแบบมีนัยสำคัญ</div>
+                    </div>
                 </div>
             </div>
 
@@ -405,6 +441,7 @@
         
         let mapInstance = null;
         let mapMarkersLayer = null;
+        let heatmapLayer = null;
         let currentMapMode = 'district';
 
         let currentPage = 1;
@@ -743,13 +780,26 @@
             currentMapMode = mode;
             const btnDist = document.getElementById('btn-map-district');
             const btnProv = document.getElementById('btn-map-province');
+            const btnHotspot = document.getElementById('btn-map-hotspot');
+            const hotspotPanel = document.getElementById('hotspot-analysis-panel');
+
+            const inactiveClass = 'px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 text-slate-400 hover:text-slate-200';
+            const activeClass = 'px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 bg-teal-500 text-slate-950 font-semibold shadow';
+            const activeHotspotClass = 'px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 bg-rose-600 text-white font-semibold shadow shadow-rose-900/40';
+
+            btnDist.className = inactiveClass;
+            btnProv.className = inactiveClass;
+            btnHotspot.className = inactiveClass;
 
             if (mode === 'district') {
-                btnDist.className = 'px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 bg-teal-500 text-slate-950 font-semibold shadow';
-                btnProv.className = 'px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 text-slate-400 hover:text-slate-200';
-            } else {
-                btnProv.className = 'px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 bg-teal-500 text-slate-950 font-semibold shadow';
-                btnDist.className = 'px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 text-slate-400 hover:text-slate-200';
+                btnDist.className = activeClass;
+                if (hotspotPanel) hotspotPanel.classList.add('hidden');
+            } else if (mode === 'province') {
+                btnProv.className = activeClass;
+                if (hotspotPanel) hotspotPanel.classList.add('hidden');
+            } else if (mode === 'hotspot') {
+                btnHotspot.className = activeHotspotClass;
+                if (hotspotPanel) hotspotPanel.classList.remove('hidden');
             }
 
             updateEsriMap();
@@ -758,6 +808,11 @@
         function updateEsriMap() {
             if (!mapInstance || !mapMarkersLayer) return;
             mapMarkersLayer.clearLayers();
+
+            if (heatmapLayer) {
+                mapInstance.removeLayer(heatmapLayer);
+                heatmapLayer = null;
+            }
 
             const legendTitle = document.getElementById('map-legend-title');
             const legendContent = document.getElementById('map-legend-content');
@@ -796,7 +851,7 @@
                     mapMarkersLayer.addLayer(marker);
                 });
 
-            } else {
+            } else if (currentMapMode === 'province') {
                 if (legendTitle) legendTitle.innerHTML = '<i data-lucide="globe-2" class="w-3.5 h-3.5"></i> <span>ขนาดเคสรายจังหวัด</span>';
 
                 const provAgg = {};
@@ -851,6 +906,140 @@
 
                     mapMarkersLayer.addLayer(circle);
                 });
+
+            } else if (currentMapMode === 'hotspot') {
+                if (legendTitle) legendTitle.innerHTML = '<i data-lucide="flame" class="w-3.5 h-3.5 text-rose-400"></i> <span>Hot-spot Spatial Risk</span>';
+
+                const heatPoints = [];
+                const areaAgg = {};
+
+                filteredData.forEach(d => {
+                    heatPoints.push([d.lat, d.lng, 0.8]);
+
+                    const areaKey = `${d.province}_${d.district}`;
+                    if (!areaAgg[areaKey]) {
+                        areaAgg[areaKey] = {
+                            province: d.province,
+                            district: d.district,
+                            lat: d.lat,
+                            lng: d.lng,
+                            count: 0
+                        };
+                    }
+                    areaAgg[areaKey].count++;
+                });
+
+                if (typeof L.heatLayer === 'function' && heatPoints.length > 0) {
+                    heatmapLayer = L.heatLayer(heatPoints, {
+                        radius: 25,
+                        blur: 18,
+                        maxZoom: 12,
+                        max: 1.0,
+                        gradient: {
+                            0.2: '#2dd4bf',
+                            0.4: '#facc15',
+                            0.65: '#f97316',
+                            0.9: '#ef4444'
+                        }
+                    }).addTo(mapInstance);
+                }
+
+                const areaList = Object.values(areaAgg);
+                const counts = areaList.map(a => a.count);
+                const n = counts.length;
+
+                let mean = 0;
+                let stdDev = 0;
+
+                if (n > 0) {
+                    mean = counts.reduce((sum, c) => sum + c, 0) / n;
+                    const variance = counts.reduce((sum, c) => sum + Math.pow(c - mean, 2), 0) / (n > 1 ? n - 1 : 1);
+                    stdDev = Math.sqrt(variance);
+                }
+
+                let hotspotCount = 0;
+                let topHotspot = null;
+
+                areaList.forEach(area => {
+                    const zScore = stdDev > 0 ? (area.count - mean) / stdDev : 0;
+                    area.zScore = zScore;
+
+                    let color = '#2dd4bf';
+                    let confidence = 'ปกติ / ไม่เป็น Hotspot';
+                    let strokeColor = '#0f172a';
+
+                    if (zScore >= 2.58) {
+                        color = '#ef4444';
+                        strokeColor = '#fca5a5';
+                        confidence = '🔥 Hotspot วิกฤต (99% Confidence, Z ≥ 2.58)';
+                        hotspotCount++;
+                    } else if (zScore >= 1.96) {
+                        color = '#f97316';
+                        strokeColor = '#fed7aa';
+                        confidence = '🟠 Hotspot ความเสี่ยงสูง (95% Confidence, Z ≥ 1.96)';
+                        hotspotCount++;
+                    } else if (zScore >= 1.65) {
+                        color = '#eab308';
+                        strokeColor = '#fef08a';
+                        confidence = '🟡 Hotspot เฝ้าระวัง (90% Confidence, Z ≥ 1.65)';
+                        hotspotCount++;
+                    }
+
+                    if (!topHotspot || zScore > topHotspot.zScore) {
+                        topHotspot = area;
+                    }
+
+                    const radius = Math.max(10, Math.min(38, 10 + (zScore > 0 ? zScore * 8 : 2)));
+                    const circle = L.circleMarker([area.lat, area.lng], {
+                        radius: radius,
+                        fillColor: color,
+                        color: strokeColor,
+                        weight: zScore >= 1.96 ? 2.5 : 1.5,
+                        opacity: 0.95,
+                        fillOpacity: zScore >= 1.65 ? 0.75 : 0.4
+                    });
+
+                    circle.bindPopup(`
+                        <div class="space-y-1.5 text-xs">
+                            <div class="font-bold text-rose-400 text-sm border-b border-slate-700 pb-1 flex items-center justify-between">
+                                <span>${area.province} (${area.district})</span>
+                            </div>
+                            <div><strong>ระดับความเสี่ยง:</strong> <span class="font-semibold text-amber-300">${confidence}</span></div>
+                            <div><strong>จำนวนผู้ป่วยสะสม:</strong> <span class="text-rose-400 font-bold">${area.count.toLocaleString('th-TH')}</span> ราย</div>
+                            <div><strong>ค่าสถิติ Z-Score:</strong> <code class="bg-slate-800 px-1.5 py-0.5 rounded text-teal-300 font-mono">${zScore.toFixed(2)}</code></div>
+                            <div class="text-[10px] text-slate-400 italic mt-1">* คำนวณจากค่าเฉลี่ยพื้นที่ (${mean.toFixed(1)} เคส) และ S.D. (${stdDev.toFixed(1)})</div>
+                        </div>
+                    `);
+
+                    mapMarkersLayer.addLayer(circle);
+                });
+
+                const badge = document.getElementById('hotspot-count-badge');
+                if (badge) badge.textContent = `พบ ${hotspotCount} พื้นที่ Hotspot`;
+
+                const topAreaEl = document.getElementById('hs-top-area');
+                const topScoreEl = document.getElementById('hs-top-score');
+                if (topHotspot && topHotspot.zScore >= 1.65) {
+                    if (topAreaEl) topAreaEl.textContent = `${topHotspot.province} (${topHotspot.district})`;
+                    if (topScoreEl) topScoreEl.textContent = `Z-Score: ${topHotspot.zScore.toFixed(2)} (${topHotspot.count} ราย)`;
+                } else {
+                    if (topAreaEl) topAreaEl.textContent = 'ไม่พบจุดกระจุกตัววิกฤต';
+                    if (topScoreEl) topScoreEl.textContent = `Z-Score สูงสุด: ${topHotspot ? topHotspot.zScore.toFixed(2) : '0.00'}`;
+                }
+
+                const avgDensityEl = document.getElementById('hs-avg-density');
+                const stdDevEl = document.getElementById('hs-std-dev');
+                if (avgDensityEl) avgDensityEl.textContent = `${mean.toFixed(1)} เคส/พื้นที่`;
+                if (stdDevEl) stdDevEl.textContent = `ค่าเบี่ยงเบนมาตรฐาน (σ): ${stdDev.toFixed(2)}`;
+
+                if (legendContent) {
+                    legendContent.innerHTML = `
+                        <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block"></span> <span>Hotspot 99% (Z ≥ 2.58)</span></div>
+                        <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-orange-500 inline-block"></span> <span>Hotspot 95% (Z ≥ 1.96)</span></div>
+                        <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-yellow-500 inline-block"></span> <span>Hotspot 90% (Z ≥ 1.65)</span></div>
+                        <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-teal-400 inline-block"></span> <span>กระจายตัวปกติ (Z < 1.65)</span></div>
+                    `;
+                }
             }
 
             if (window.lucide) lucide.createIcons();
