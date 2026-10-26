@@ -91,7 +91,7 @@
                 <div>
                     <h1 class="text-base sm:text-lg font-semibold text-slate-800 dark:text-slate-100 leading-tight flex items-center gap-2">
                         <span>ระบบเฝ้าระวังและติดตามระบาดวิทยา</span>
-                        <span class="hidden md:inline-block px-2 py-0.5 rounded text-[10px] font-mono bg-teal-500/10 dark:bg-teal-500/20 text-teal-600 dark:text-teal-300 border border-teal-500/30">GitHub Pages</span>
+                        <span class="hidden md:inline-block px-2 py-0.5 rounded text-[10px] font-mono bg-teal-500/10 dark:bg-teal-500/20 text-teal-600 dark:text-teal-300 border border-teal-500/30">Live Surveillance</span>
                     </h1>
                     <p class="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
                         <span id="status-dot" class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
@@ -274,22 +274,22 @@
             </div>
 
             <!-- Hotspot Analysis Executive Summary Panel (Default Visible) -->
-        <div id="hotspot-analysis-panel" class="bg-slate-100 dark:bg-slate-900/90 border border-rose-500/30 rounded-xl p-3 text-xs text-slate-700 dark:text-slate-300 transition-all">
-            <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-700/60 pb-1.5 mb-2">
-                <span class="font-semibold text-rose-600 dark:text-rose-400 flex items-center gap-1.5">
-                    <i data-lucide="flame" class="w-4 h-4 text-rose-500 animate-pulse"></i>
-                    สรุปการวิเคราะห์พื้นที่กระจุกตัวความเสี่ยงสูง (Getis-Ord / Z-Score Spatial Analysis)
-                </span>
-                <div class="flex items-center gap-2">
-                    <span id="unmapped-count-badge" class="px-2 py-0.5 rounded-full bg-slate-500/10 text-slate-500 dark:text-slate-400 border border-slate-500/30 text-[10px] hidden">
-                        ไม่ระบุพื้นที่ 0 ราย
+            <div id="hotspot-analysis-panel" class="bg-slate-100 dark:bg-slate-900/90 border border-rose-500/30 rounded-xl p-3 text-xs text-slate-700 dark:text-slate-300 transition-all">
+                <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-700/60 pb-1.5 mb-2">
+                    <span class="font-semibold text-rose-600 dark:text-rose-400 flex items-center gap-1.5">
+                        <i data-lucide="flame" class="w-4 h-4 text-rose-500 animate-pulse"></i>
+                        สรุปการวิเคราะห์พื้นที่กระจุกตัวความเสี่ยงสูง (Getis-Ord / Z-Score Spatial Analysis)
                     </span>
-                    <span id="hotspot-count-badge" class="px-2 py-0.5 rounded-full bg-rose-500/10 dark:bg-rose-500/20 text-rose-700 dark:text-rose-300 border border-rose-500/40 text-[10px] font-mono">
-                        พบ 0 พื้นที่ Hotspot
-                    </span>
+                    <div class="flex items-center gap-2">
+                        <span id="unmapped-count-badge" class="px-2 py-0.5 rounded-full bg-slate-500/10 text-slate-500 dark:text-slate-400 border border-slate-500/30 text-[10px] hidden">
+                            ไม่ระบุพื้นที่ 0 ราย
+                        </span>
+                        <span id="hotspot-count-badge" class="px-2 py-0.5 rounded-full bg-rose-500/10 dark:bg-rose-500/20 text-rose-700 dark:text-rose-300 border border-rose-500/40 text-[10px] font-mono">
+                            พบ 0 พื้นที่ Hotspot
+                        </span>
+                    </div>
                 </div>
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3" id="hotspot-metrics-grid">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3" id="hotspot-metrics-grid">
                     <div class="bg-white dark:bg-slate-800/80 p-2.5 rounded-lg border border-slate-200 dark:border-slate-700/50">
                         <div class="text-[10px] text-slate-500 dark:text-slate-400 uppercase tracking-wider">พื้นที่ Hotspot สูงสุด (Z ≥ 1.65)</div>
                         <div class="text-sm font-bold text-rose-600 dark:text-rose-400 truncate mt-0.5" id="hs-top-area">-</div>
@@ -421,7 +421,8 @@
                             <th class="py-3 px-4">วันที่แจ้งป่วย</th>
                             <th class="py-3 px-4">เพศ</th>
                             <th class="py-3 px-4">อายุ (ปี)</th>
-                            <th class="py-3 px-4">จังหวัด</th>
+                            <th class="py-3 px-4">จังหวัด (onset)</th>
+                            <th class="py-3 px-4">อำเภอ/เขต (onset)</th>
                             <th class="py-3 px-4">ปัจจัยเสี่ยง</th>
                         </tr>
                     </thead>
@@ -444,7 +445,7 @@
     <!-- Footer -->
     <footer class="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 py-4 mt-auto transition-colors">
         <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500 dark:text-slate-500">
-            ระบบเฝ้าระวังทางระบาดวิทยา (Epidemiological Surveillance Dashboard) &bull; ออกแบบสำหรับ GitHub Pages
+            ระบบเฝ้าระวังทางระบาดวิทยา (Epidemiological Surveillance Dashboard) &bull; ออกแบบสำหรับ GitHub Pages & Google Apps Script
         </div>
     </footer>
 
@@ -462,7 +463,6 @@
         let darkTileLayer = null;
         let lightTileLayer = null;
         
-        // Default map mode set to Hotspot
         let currentMapMode = 'hotspot';
         let currentThemeMode = localStorage.getItem('themeMode') || 'auto';
 
@@ -574,156 +574,89 @@
         };
 
         const KNOWN_DISTRICT_COORDS = {
+            'กรุงเทพมหานคร_พระนคร': [13.7530, 100.4990],
+            'กรุงเทพมหานคร_ดุสิต': [13.7768, 100.5204],
+            'กรุงเทพมหานคร_หนองจอก': [13.8552, 100.8625],
+            'กรุงเทพมหานคร_บางรัก': [13.7259, 100.5239],
+            'กรุงเทพมหานคร_บางเขน': [13.8738, 100.5961],
+            'กรุงเทพมหานคร_บางกะปิ': [13.7658, 100.6475],
+            'กรุงเทพมหานคร_ปทุมวัน': [13.7443, 100.5347],
+            'กรุงเทพมหานคร_จตุจักร': [13.8286, 100.5597],
+            'กรุงเทพมหานคร_สายไหม': [13.9192, 100.6458],
             'กาฬสินธุ์_เมืองกาฬสินธุ์': [16.4322, 103.5061],
             'กาฬสินธุ์_ยางตลาด': [16.3985, 103.3820],
             'กาฬสินธุ์_กมลาไสย': [16.3380, 103.5761],
-            'กาฬสินธุ์_กุฉินารายณ์': [16.5414, 104.0510],
-            'กาฬสินธุ์_สมเด็จ': [16.7018, 103.7483],
-            'กาฬสินธุ์_สหัสขันธ์': [16.7161, 103.5204],
-            'กาฬสินธุ์_ห้วยเม็ก': [16.5888, 103.2355],
-            'กาฬสินธุ์_หนองกุงศรี': [16.6508, 103.3032],
             'ขอนแก่น_เมืองขอนแก่น': [16.4419, 102.8360],
             'ขอนแก่น_บ้านไผ่': [16.0617, 102.7302],
-            'ขอนแก่น_ชุมแพ': [16.5447, 102.0988],
             'เชียงใหม่_เมืองเชียงใหม่': [18.7883, 98.9853],
             'เชียงใหม่_แม่ริม': [18.9142, 98.9431],
             'ชลบุรี_เมืองชลบุรี': [13.3611, 100.9847],
-            'ชลบุรี_ศรีราชา': [13.1738, 100.9312],
-            'นครราชสีมา_เมืองนครราชสีมา': [14.9799, 102.0978],
-            'นครราชสีมา_ปักธงชัย': [14.7183, 102.0234],
-            'นครราชสีมา_ปากช่อง': [14.6860, 101.4018],
-            'นครราชสีมา_พิมาย': [15.2217, 102.4939]
+            'ชลบุรี_ศรีราชา': [13.1738, 100.9312]
         };
 
-        window.addEventListener('DOMContentLoaded', function() {
-            if (window.lucide) lucide.createIcons();
-            updateThemeUI();
-            initEsriMap();
-            setupEventListeners();
-            fetchAndProcessData();
+        function normalizeProvinceName(rawProv) {
+            if (!rawProv) return 'ไม่ระบุ';
+            let clean = String(rawProv).replace(/[\u200B-\u200D\uFEFF\u00A0\t\r\n]/g, '').trim();
+            const invalidVals = ['ไม่ระบุ', 'ไม่ทราบ', 'unknown', 'null', 'undefined', '-', '?', '99', 'none', 'n/a', ''];
+            if (invalidVals.includes(clean.toLowerCase())) return 'ไม่ระบุ';
 
-            // Prevent map blank / hidden issue on window resize
-            window.addEventListener('resize', function() {
-                if (mapInstance) mapInstance.invalidateSize();
-            });
-
-            // System theme change listener
-            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-                if (currentThemeMode === 'auto') {
-                    applyTheme('auto');
+            clean = clean.replace(/^(จังหวัด|จ\.)\s*/i, '').trim();
+            
+            if (PROVINCE_ALIASES[clean]) {
+                return PROVINCE_ALIASES[clean];
+            }
+            if (PROVINCE_COORDS[clean]) {
+                return clean;
+            }
+            for (const key of Object.keys(PROVINCE_COORDS)) {
+                if (clean.includes(key) || key.includes(clean)) {
+                    return key;
                 }
-            });
-        });
-
-        // Event Listeners & Filtering Pipeline Setup
-        function setupEventListeners() {
-            const dateStart = document.getElementById('filter-date-start');
-            const dateEnd = document.getElementById('filter-date-end');
-            const province = document.getElementById('filter-province');
-            const risk = document.getElementById('filter-risk');
-            const search = document.getElementById('table-search');
-
-            if (dateStart) dateStart.addEventListener('change', applyFilters);
-            if (dateEnd) dateEnd.addEventListener('change', applyFilters);
-            if (province) province.addEventListener('change', applyFilters);
-            if (risk) risk.addEventListener('change', applyFilters);
-            if (search) {
-                search.addEventListener('input', (e) => {
-                    searchQuery = e.target.value.toLowerCase().trim();
-                    currentPage = 1;
-                    renderTable();
-                });
             }
+            return clean || 'ไม่ระบุ';
         }
 
-        function fetchAndProcessData() {
-            const refreshIcon = document.getElementById('refresh-icon');
-            const statusDot = document.getElementById('status-dot');
-            const lastUpdateText = document.getElementById('last-update-text');
+        function normalizeDistrictName(rawDistrict, provinceName) {
+            if (!rawDistrict) return 'ไม่ระบุ';
 
-            if (refreshIcon) refreshIcon.classList.add('animate-spin');
-            if (statusDot) statusDot.className = 'w-2 h-2 rounded-full bg-amber-400 animate-pulse';
-            if (lastUpdateText) lastUpdateText.textContent = 'กำลังโหลดข้อมูลจาก Google Sheets...';
+            let clean = String(rawDistrict)
+                .replace(/[\u200B-\u200D\uFEFF\u00A0\t\r\n]/g, '')
+                .trim();
 
-            if (typeof google !== 'undefined' && google.script && google.script.run) {
-                google.script.run
-                    .withSuccessHandler(parseCsvString)
-                    .withFailureHandler(err => {
-                        console.warn('Apps Script fetch failed, falling back to PapaParse/demo:', err);
-                        fetchWithPapaParse();
-                    })
-                    .fetchCsvData();
-            } else {
-                fetchWithPapaParse();
-            }
-        }
+            const invalidVals = ['ไม่ระบุ', 'ไม่ทราบ', 'unknown', 'null', 'undefined', '-', '?', '99', 'none', 'n/a', ''];
+            if (invalidVals.includes(clean.toLowerCase())) return 'ไม่ระบุ';
 
-        function fetchWithPapaParse() {
-            if (typeof Papa === 'undefined') {
-                useFallbackDataset();
-                return;
+            clean = clean.replace(/^(อำเภอ|อ\.|เขต|ตำบล|ต\.)\s*/i, '').trim();
+            clean = clean.replace(/[0-9_.]/g, '').trim();
+
+            if (!clean || invalidVals.includes(clean.toLowerCase())) return 'ไม่ระบุ';
+
+            const normProv = normalizeProvinceName(provinceName);
+
+            if (clean === 'เมือง' || clean === 'อำเภอเมือง' || clean === `เมือง${normProv}`) {
+                return normProv !== 'ไม่ระบุ' ? `เมือง${normProv}` : 'เมือง';
             }
 
-            Papa.parse(CSV_URL, {
-                download: true,
-                header: true,
-                skipEmptyLines: true,
-                complete: function(results) {
-                    if (results && results.data && results.data.length > 0) {
-                        parseCsvData(results.data);
-                    } else {
-                        useFallbackDataset();
-                    }
-                },
-                error: function(err) {
-                    console.warn('PapaParse error:', err);
-                    useFallbackDataset();
-                }
-            });
-        }
-
-        function parseCsvString(csvText) {
-            if (!csvText) {
-                useFallbackDataset();
-                return;
+            if (normProv !== 'ไม่ระบุ' && clean.endsWith(normProv) && clean !== `เมือง${normProv}`) {
+                clean = clean.replace(new RegExp(`${normProv}$`), '').trim();
             }
-            if (typeof Papa !== 'undefined') {
-                const results = Papa.parse(csvText, { header: true, skipEmptyLines: true });
-                if (results && results.data && results.data.length > 0) {
-                    parseCsvData(results.data);
-                } else {
-                    useFallbackDataset();
-                }
-            } else {
-                useFallbackDataset();
-            }
-        }
 
-        function parseCsvData(data) {
-            const refreshIcon = document.getElementById('refresh-icon');
-            const statusDot = document.getElementById('status-dot');
-            const lastUpdateText = document.getElementById('last-update-text');
-
-            rawData = normalizeDataset(data);
-            populateFilterOptions(rawData);
-            applyFilters();
-
-            if (refreshIcon) refreshIcon.classList.remove('animate-spin');
-            if (statusDot) statusDot.className = 'w-2 h-2 rounded-full bg-teal-400';
-            if (lastUpdateText) {
-                const now = new Date();
-                const timeStr = now.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
-                lastUpdateText.textContent = `อัปเดตล่าสุด: ${timeStr} น. (${rawData.length.toLocaleString('th-TH')} รายการ)`;
-            }
+            return clean || 'ไม่ระบุ';
         }
 
         function normalizeDataset(data) {
             if (!Array.isArray(data)) return [];
 
             return data.map((item, idx) => {
+                const provRaw = item.province_of_onset || item['province_of_onset'] || 
+                                 item['จังหวัดที่เริ่มมีอาการ'] || item.province || 
+                                 item['จังหวัด'] || item.Province || '';
+
+                const distRaw = item.district_of_onset || item['district_of_onset'] || 
+                                 item['อำเภอที่เริ่มมีอาการ'] || item.district || 
+                                 item['อำเภอ'] || item['เขต'] || item.District || 'ไม่ระบุ';
+
                 const dateRaw = item.announce_date || item.date || item.Date || item['วันที่'] || item['วันที่แจ้งป่วย'] || '';
-                const provRaw = item.province || item.province_of_onset || item['จังหวัด'] || item.Province || '';
-                const distRaw = item.district_of_onset || item.district || item['อำเภอ'] || item['เขต'] || item.District || 'ไม่ระบุ';
                 const sexRaw = item.sex || item.gender || item['เพศ'] || item.Gender || 'ไม่ระบุ';
                 const ageRaw = item.age || item['อายุ'] || item.Age;
                 const riskRaw = item.risk || item['ปัจจัยเสี่ยง'] || item.Risk || 'ไม่ระบุ';
@@ -732,7 +665,7 @@
                 if (!dateStr) dateStr = 'ไม่ระบุ';
 
                 const province = normalizeProvinceName(provRaw);
-                const district = String(distRaw).trim() || 'ไม่ระบุ';
+                const district = normalizeDistrictName(distRaw, province);
 
                 let gender = String(sexRaw).trim();
                 if (gender.toLowerCase().includes('ชาย') || gender.toLowerCase() === 'm' || gender.toLowerCase() === 'male') gender = 'ชาย';
@@ -762,473 +695,9 @@
             });
         }
 
-        function populateFilterOptions(data) {
-            const provSelect = document.getElementById('filter-province');
-            const riskSelect = document.getElementById('filter-risk');
-
-            if (provSelect) {
-                const currentProv = provSelect.value;
-                provSelect.innerHTML = '<option value="ALL">ทุกจังหวัด</option>';
-                const provinces = [...new Set(data.map(d => d.province).filter(p => p && p !== 'ไม่ระบุ'))].sort((a,b) => a.localeCompare(b, 'th'));
-                provinces.forEach(p => {
-                    const opt = document.createElement('option');
-                    opt.value = p;
-                    opt.textContent = p;
-                    provSelect.appendChild(opt);
-                });
-                if (provinces.includes(currentProv)) provSelect.value = currentProv;
-            }
-
-            if (riskSelect) {
-                const currentRisk = riskSelect.value;
-                riskSelect.innerHTML = '<option value="ALL">ทุกปัจจัยเสี่ยง</option>';
-                const risks = [...new Set(data.map(d => d.risk).filter(r => r && r !== 'ไม่ระบุ'))].sort((a,b) => a.localeCompare(b, 'th'));
-                risks.forEach(r => {
-                    const opt = document.createElement('option');
-                    opt.value = r;
-                    opt.textContent = r;
-                    riskSelect.appendChild(opt);
-                });
-                if (risks.includes(currentRisk)) riskSelect.value = currentRisk;
-            }
-        }
-
-        function applyFilters() {
-            const startDate = document.getElementById('filter-date-start')?.value;
-            const endDate = document.getElementById('filter-date-end')?.value;
-            const selectedProv = document.getElementById('filter-province')?.value || 'ALL';
-            const selectedRisk = document.getElementById('filter-risk')?.value || 'ALL';
-
-            filteredData = rawData.filter(d => {
-                if (startDate && d.dateStr !== 'ไม่ระบุ' && d.dateStr < startDate) return false;
-                if (endDate && d.dateStr !== 'ไม่ระบุ' && d.dateStr > endDate) return false;
-                if (selectedProv !== 'ALL' && d.province !== selectedProv) return false;
-                if (selectedRisk !== 'ALL' && d.risk !== selectedRisk) return false;
-                return true;
-            });
-
-            currentPage = 1;
-            updateDashboardMetrics();
-            updateEsriMap();
-            renderCharts();
-            renderTable();
-        }
-
-        // Theme Switcher Functions
-        function setTheme(mode) {
-            currentThemeMode = mode;
-            localStorage.setItem('themeMode', mode);
-            applyTheme(mode);
-        }
-
-        function applyTheme(mode) {
-            const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            const isDark = mode === 'dark' || (mode === 'auto' && systemDark);
-
-            if (isDark) {
-                document.documentElement.classList.add('dark');
-            } else {
-                document.documentElement.classList.remove('dark');
-            }
-
-            updateThemeUI();
-            updateMapTileForTheme(isDark);
-            renderCharts();
-        }
-
-        function updateThemeUI() {
-            const btnLight = document.getElementById('btn-theme-light');
-            const btnDark = document.getElementById('btn-theme-dark');
-            const btnAuto = document.getElementById('btn-theme-auto');
-
-            const activeClass = 'bg-teal-500 text-white dark:text-slate-950 font-semibold shadow-sm';
-            const inactiveClass = 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white';
-
-            if (btnLight) btnLight.className = `p-1.5 rounded-lg transition-all ${currentThemeMode === 'light' ? activeClass : inactiveClass}`;
-            if (btnDark) btnDark.className = `p-1.5 rounded-lg transition-all ${currentThemeMode === 'dark' ? activeClass : inactiveClass}`;
-            if (btnAuto) btnAuto.className = `p-1.5 rounded-lg transition-all ${currentThemeMode === 'auto' ? activeClass : inactiveClass}`;
-        }
-
-        function initEsriMap() {
-            if (mapInstance) return;
-            mapInstance = L.map('esri-map', {
-                center: [13.7563, 100.5018],
-                zoom: 6,
-                zoomControl: true
-            });
-
-            // Official ESRI ArcGIS Map Layers
-            darkTileLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
-                attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, USGS',
-                maxZoom: 16
-            });
-
-            lightTileLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
-                attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom',
-                maxZoom: 19
-            });
-
-            const isDark = document.documentElement.classList.contains('dark');
-            if (isDark) {
-                darkTileLayer.addTo(mapInstance);
-            } else {
-                lightTileLayer.addTo(mapInstance);
-            }
-
-            mapMarkersLayer = L.layerGroup().addTo(mapInstance);
-
-            // Force recalculate map container size after init
-            setTimeout(() => {
-                if (mapInstance) mapInstance.invalidateSize();
-            }, 300);
-        }
-
-        function updateMapTileForTheme(isDark) {
-            if (!mapInstance || !darkTileLayer || !lightTileLayer) return;
-            if (isDark) {
-                if (mapInstance.hasLayer(lightTileLayer)) mapInstance.removeLayer(lightTileLayer);
-                if (!mapInstance.hasLayer(darkTileLayer)) darkTileLayer.addTo(mapInstance);
-            } else {
-                if (mapInstance.hasLayer(darkTileLayer)) mapInstance.removeLayer(darkTileLayer);
-                if (!mapInstance.hasLayer(lightTileLayer)) lightTileLayer.addTo(mapInstance);
-            }
-            mapInstance.invalidateSize();
-        }
-
-        function switchMapMode(mode) {
-            currentMapMode = mode;
-            updateMapButtonsUI();
-            updateEsriMap();
-        }
-
-        function updateMapButtonsUI() {
-            const btnDist = document.getElementById('btn-map-district');
-            const btnProv = document.getElementById('btn-map-province');
-            const btnHotspot = document.getElementById('btn-map-hotspot');
-            const hotspotPanel = document.getElementById('hotspot-analysis-panel');
-
-            const inactiveClass = 'px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200';
-            const activeClass = 'px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 bg-teal-500 text-slate-950 font-semibold shadow';
-            const activeHotspotClass = 'px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 bg-rose-600 text-white font-semibold shadow shadow-rose-900/40';
-
-            if (btnDist) btnDist.className = inactiveClass;
-            if (btnProv) btnProv.className = inactiveClass;
-            if (btnHotspot) btnHotspot.className = inactiveClass;
-
-            if (currentMapMode === 'district') {
-                if (btnDist) btnDist.className = activeClass;
-                if (hotspotPanel) hotspotPanel.classList.add('hidden');
-            } else if (currentMapMode === 'province') {
-                if (btnProv) btnProv.className = activeClass;
-                if (hotspotPanel) hotspotPanel.classList.add('hidden');
-            } else if (currentMapMode === 'hotspot') {
-                if (btnHotspot) btnHotspot.className = activeHotspotClass;
-                if (hotspotPanel) hotspotPanel.classList.remove('hidden');
-            }
-        }
-
-        function updateEsriMap() {
-            if (!mapInstance) return;
-
-            // Clear previous map markers and heatmap layer
-            if (mapMarkersLayer) mapMarkersLayer.clearLayers();
-            if (heatmapLayer) {
-                mapInstance.removeLayer(heatmapLayer);
-                heatmapLayer = null;
-            }
-
-            const legendTitle = document.getElementById('map-legend-title');
-            const legendContent = document.getElementById('map-legend-content');
-
-            if (currentMapMode === 'district') {
-                if (legendTitle) legendTitle.innerHTML = '<i data-lucide="crosshair" class="w-3.5 h-3.5"></i> <span>จุดเคสรายบุคคล</span>';
-                if (legendContent) {
-                    legendContent.innerHTML = `
-                        <div class="flex items-center gap-2">
-                            <span class="w-2.5 h-2.5 rounded-full bg-teal-400 border border-teal-200 inline-block"></span>
-                            <span>ตำแหน่งเกิดโรค (1 เคส)</span>
-                        </div>
-                    `;
-                }
-
-                filteredData.forEach(d => {
-                    if (d.province === 'ไม่ระบุ') return;
-
-                    const marker = L.circleMarker([d.lat, d.lng], {
-                        radius: 5,
-                        fillColor: '#2dd4bf',
-                        color: '#134e4a',
-                        weight: 1,
-                        opacity: 0.9,
-                        fillOpacity: 0.75
-                    });
-
-                    marker.bindPopup(`
-                        <div class="space-y-1 text-xs">
-                            <div class="font-bold text-teal-400 text-sm border-b border-slate-700 pb-1">${d.province}</div>
-                            <div><strong>อำเภอ/เขต:</strong> ${d.district}</div>
-                            <div><strong>วันที่แจ้ง:</strong> ${d.dateStr}</div>
-                            <div><strong>เพศ/อายุ:</strong> ${d.gender} (${d.age !== null ? d.age + ' ปี' : 'ไม่ระบุ'})</div>
-                            <div><strong>ปัจจัยเสี่ยง:</strong> ${d.risk}</div>
-                        </div>
-                    `);
-
-                    mapMarkersLayer.addLayer(marker);
-                });
-
-            } else if (currentMapMode === 'province') {
-                if (legendTitle) legendTitle.innerHTML = '<i data-lucide="globe-2" class="w-3.5 h-3.5"></i> <span>ขนาดเคสรายจังหวัด</span>';
-
-                const provAgg = {};
-                filteredData.forEach(d => {
-                    const normProv = normalizeProvinceName(d.province);
-                    if (normProv === 'ไม่ระบุ') return;
-
-                    if (!provAgg[normProv]) {
-                        const baseCoord = PROVINCE_COORDS[normProv] || PROVINCE_COORDS['กรุงเทพมหานคร'];
-                        provAgg[normProv] = {
-                            count: 0,
-                            lat: baseCoord[0],
-                            lng: baseCoord[1]
-                        };
-                    }
-                    provAgg[normProv].count++;
-                });
-
-                const counts = Object.values(provAgg).map(p => p.count);
-                const maxCount = Math.max(...counts, 1);
-
-                if (legendContent) {
-                    legendContent.innerHTML = `
-                        <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block"></span> <span>หนาแน่นมาก (>50% Max)</span></div>
-                        <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span> <span>ปานกลาง</span></div>
-                        <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-teal-400 inline-block"></span> <span>น้อย</span></div>
-                    `;
-                }
-
-                Object.entries(provAgg).forEach(([provName, data]) => {
-                    const ratio = data.count / maxCount;
-                    const radius = Math.max(8, Math.min(35, Math.sqrt(data.count) * 4));
-                    let color = '#2dd4bf';
-                    if (ratio > 0.5) color = '#f43f5e';
-                    else if (ratio > 0.2) color = '#f59e0b';
-
-                    const circle = L.circleMarker([data.lat, data.lng], {
-                        radius: radius,
-                        fillColor: color,
-                        color: '#0f172a',
-                        weight: 1.5,
-                        opacity: 0.9,
-                        fillOpacity: 0.65
-                    });
-
-                    circle.bindPopup(`
-                        <div class="space-y-1 text-xs">
-                            <div class="font-bold text-teal-400 text-sm border-b border-slate-700 pb-1">${provName}</div>
-                            <div><strong>จำนวนผู้ป่วยสะสม:</strong> <span class="text-rose-400 font-bold">${data.count.toLocaleString('th-TH')}</span> ราย</div>
-                        </div>
-                    `);
-
-                    mapMarkersLayer.addLayer(circle);
-                });
-
-            } else if (currentMapMode === 'hotspot') {
-                if (legendTitle) legendTitle.innerHTML = '<i data-lucide="flame" class="w-3.5 h-3.5 text-rose-400"></i> <span>Hot-spot Spatial Risk</span>';
-
-                const heatPoints = [];
-                const areaAgg = {};
-                let unmappedCount = 0;
-
-                filteredData.forEach(d => {
-                    if (d.province === 'ไม่ระบุ' || d.district === 'ไม่ระบุ') {
-                        unmappedCount++;
-                        return;
-                    }
-
-                    heatPoints.push([d.lat, d.lng, 0.8]);
-
-                    const areaKey = `${d.province}_${d.district}`;
-                    if (!areaAgg[areaKey]) {
-                        areaAgg[areaKey] = {
-                            province: d.province,
-                            district: d.district,
-                            lat: d.lat,
-                            lng: d.lng,
-                            count: 0
-                        };
-                    }
-                    areaAgg[areaKey].count++;
-                });
-
-                const unmappedBadge = document.getElementById('unmapped-count-badge');
-                if (unmappedBadge) {
-                    if (unmappedCount > 0) {
-                        unmappedBadge.textContent = `ไม่ระบุพื้นที่ ${unmappedCount.toLocaleString('th-TH')} ราย (ยกเว้นจาก GIS)`;
-                        unmappedBadge.classList.remove('hidden');
-                    } else {
-                        unmappedBadge.classList.add('hidden');
-                    }
-                }
-
-                if (typeof L.heatLayer === 'function' && heatPoints.length > 0) {
-                    heatmapLayer = L.heatLayer(heatPoints, {
-                        radius: 25,
-                        blur: 18,
-                        maxZoom: 12,
-                        max: 1.0,
-                        gradient: {
-                            0.2: '#2dd4bf',
-                            0.4: '#facc15',
-                            0.65: '#f97316',
-                            0.9: '#ef4444'
-                        }
-                    }).addTo(mapInstance);
-                }
-
-                const areaList = Object.values(areaAgg);
-                const counts = areaList.map(a => a.count);
-                const n = counts.length;
-
-                let mean = 0;
-                let stdDev = 0;
-
-                if (n > 0) {
-                    mean = counts.reduce((sum, c) => sum + c, 0) / n;
-                    const variance = counts.reduce((sum, c) => sum + Math.pow(c - mean, 2), 0) / (n > 1 ? n - 1 : 1);
-                    stdDev = Math.sqrt(variance);
-                }
-
-                let hotspotCount = 0;
-                let topHotspot = null;
-
-                areaList.forEach(area => {
-                    const zScore = stdDev > 0 ? (area.count - mean) / stdDev : 0;
-                    area.zScore = zScore;
-
-                    let color = '#2dd4bf';
-                    let confidence = 'ปกติ / ไม่เป็น Hotspot';
-                    let strokeColor = '#0f172a';
-
-                    if (zScore >= 2.58) {
-                        color = '#ef4444';
-                        strokeColor = '#fca5a5';
-                        confidence = '🔥 Hotspot วิกฤต (99% Confidence, Z ≥ 2.58)';
-                        hotspotCount++;
-                    } else if (zScore >= 1.96) {
-                        color = '#f97316';
-                        strokeColor = '#fed7aa';
-                        confidence = '🟠 Hotspot ความเสี่ยงสูง (95% Confidence, Z ≥ 1.96)';
-                        hotspotCount++;
-                    } else if (zScore >= 1.65) {
-                        color = '#eab308';
-                        strokeColor = '#fef08a';
-                        confidence = '🟡 Hotspot เฝ้าระวัง (90% Confidence, Z ≥ 1.65)';
-                        hotspotCount++;
-                    }
-
-                    if (!topHotspot || zScore > topHotspot.zScore) {
-                        topHotspot = area;
-                    }
-
-                    const radius = Math.max(10, Math.min(38, 10 + (zScore > 0 ? zScore * 8 : 2)));
-                    const circle = L.circleMarker([area.lat, area.lng], {
-                        radius: radius,
-                        fillColor: color,
-                        color: strokeColor,
-                        weight: zScore >= 1.96 ? 2.5 : 1.5,
-                        opacity: 0.95,
-                        fillOpacity: zScore >= 1.65 ? 0.75 : 0.4
-                    });
-
-                    circle.bindPopup(`
-                        <div class="space-y-1.5 text-xs">
-                            <div class="font-bold text-rose-400 text-sm border-b border-slate-700 pb-1 flex items-center justify-between">
-                                <span>${area.province} (${area.district})</span>
-                            </div>
-                            <div><strong>ระดับความเสี่ยง:</strong> <span class="font-semibold text-amber-300">${confidence}</span></div>
-                            <div><strong>จำนวนผู้ป่วยสะสม:</strong> <span class="text-rose-400 font-bold">${area.count.toLocaleString('th-TH')}</span> ราย</div>
-                            <div><strong>ค่าสถิติ Z-Score:</strong> <code class="bg-slate-800 px-1.5 py-0.5 rounded text-teal-300 font-mono">${zScore.toFixed(2)}</code></div>
-                            <div class="text-[10px] text-slate-400 italic mt-1">* คำนวณจากค่าเฉลี่ยพื้นที่ (${mean.toFixed(1)} เคส) และ S.D. (${stdDev.toFixed(1)})</div>
-                        </div>
-                    `);
-
-                    mapMarkersLayer.addLayer(circle);
-                });
-
-                const badge = document.getElementById('hotspot-count-badge');
-                if (badge) badge.textContent = `พบ ${hotspotCount} พื้นที่ Hotspot`;
-
-                const topAreaEl = document.getElementById('hs-top-area');
-                const topScoreEl = document.getElementById('hs-top-score');
-                if (topHotspot && topHotspot.zScore >= 1.65) {
-                    if (topAreaEl) topAreaEl.textContent = `${topHotspot.province} (${topHotspot.district})`;
-                    if (topScoreEl) topScoreEl.textContent = `Z-Score: ${topHotspot.zScore.toFixed(2)} (${topHotspot.count} ราย)`;
-                } else {
-                    if (topAreaEl) topAreaEl.textContent = 'ไม่พบจุดกระจุกตัววิกฤต';
-                    if (topScoreEl) topScoreEl.textContent = `Z-Score สูงสุด: ${topHotspot ? topHotspot.zScore.toFixed(2) : '0.00'}`;
-                }
-
-                const avgDensityEl = document.getElementById('hs-avg-density');
-                const stdDevEl = document.getElementById('hs-std-dev');
-                if (avgDensityEl) avgDensityEl.textContent = `${mean.toFixed(1)} เคส/พื้นที่`;
-                if (stdDevEl) stdDevEl.textContent = `ค่าเบี่ยงเบนมาตรฐาน (σ): ${stdDev.toFixed(2)}`;
-
-                if (legendContent) {
-                    legendContent.innerHTML = `
-                        <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block"></span> <span>Hotspot 99% (Z ≥ 2.58)</span></div>
-                        <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-orange-500 inline-block"></span> <span>Hotspot 95% (Z ≥ 1.96)</span></div>
-                        <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-yellow-500 inline-block"></span> <span>Hotspot 90% (Z ≥ 1.65)</span></div>
-                        <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-teal-400 inline-block"></span> <span>กระจายตัวปกติ (Z < 1.65)</span></div>
-                    `;
-                }
-            }
-
-            if (window.lucide) lucide.createIcons();
-        }
-
-        function normalizeProvinceName(rawProvince) {
-            if (!rawProvince) return 'ไม่ระบุ';
-
-            // Clean unicode whitespace (\u00A0, \u200B), tabs, carriage returns, etc.
-            let clean = String(rawProvince)
-                .replace(/[\u200B-\u200D\uFEFF\u00A0\t\r\n]/g, '')
-                .trim();
-
-            // Strip prefix words like "จังหวัด", "จ.", "จ "
-            clean = clean.replace(/^(จังหวัด|จ\.|จ\s+)/i, '').trim();
-            clean = clean.replace(/[0-9_.]/g, '').trim();
-
-            if (!clean) return 'ไม่ระบุ';
-
-            // 1. Alias Lookup
-            if (PROVINCE_ALIASES[clean]) return PROVINCE_ALIASES[clean];
-
-            // 2. Direct Key Lookup in PROVINCE_COORDS
-            if (PROVINCE_COORDS[clean]) return clean;
-
-            // 3. Exact Substring matching against known 77 provinces
-            const allProvinces = Object.keys(PROVINCE_COORDS);
-            for (const prov of allProvinces) {
-                if (clean.includes(prov)) {
-                    return prov;
-                }
-            }
-
-            // 4. Safe reverse containment check (only for long strings > 3 chars)
-            if (clean.length > 3) {
-                for (const prov of allProvinces) {
-                    if (prov.includes(clean)) {
-                        return prov;
-                    }
-                }
-            }
-
-            return clean;
-        }
-
         function getCoordinate(province, district, index) {
             const normalizedProv = normalizeProvinceName(province);
-            const cleanDist = String(district || '').trim();
+            const cleanDist = normalizeDistrictName(district, normalizedProv);
 
             let provBase = PROVINCE_COORDS[normalizedProv];
             let isUnknownProvince = false;
@@ -1245,12 +714,12 @@
                 distCenter = KNOWN_DISTRICT_COORDS[distKey];
             } else if (cleanDist && KNOWN_DISTRICT_COORDS[cleanDist]) {
                 distCenter = KNOWN_DISTRICT_COORDS[cleanDist];
-            } else if (!cleanDist || cleanDist === 'ไม่ระบุ' || cleanDist.includes('เมือง') || isUnknownProvince) {
+            } else if (!cleanDist || cleanDist === 'ไม่ระบุ' || isUnknownProvince) {
                 distCenter = [provBase[0], provBase[1]];
             } else {
-                const hash = getHash(cleanDist);
+                const hash = getHash(distKey);
                 const angle = (hash % 360) * (Math.PI / 180);
-                const radius = 0.04 + ((hash % 15) * 0.008);
+                const radius = 0.02 + ((hash % 12) * 0.006);
                 distCenter = [
                     provBase[0] + Math.sin(angle) * radius,
                     provBase[1] + Math.cos(angle) * radius
@@ -1258,7 +727,7 @@
             }
 
             const caseAngle = ((index * 137.5) % 360) * (Math.PI / 180);
-            const caseJitterRadius = 0.0015 + ((index % 5) * 0.001);
+            const caseJitterRadius = 0.0012 + ((index % 7) * 0.0008);
 
             return [
                 distCenter[0] + Math.sin(caseAngle) * caseJitterRadius,
@@ -1273,6 +742,67 @@
                 hash = s.charCodeAt(i) + ((hash << 5) - hash);
             }
             return Math.abs(hash);
+        }
+
+        function populateFilterOptions(data) {
+            const provSelect = document.getElementById('filter-province');
+            const riskSelect = document.getElementById('filter-risk');
+            
+            if (!provSelect || !riskSelect) return;
+
+            const currentProv = provSelect.value;
+            const currentRisk = riskSelect.value;
+
+            const provinces = new Set();
+            const risks = new Set();
+
+            data.forEach(item => {
+                if (item.province && item.province !== 'ไม่ระบุ') provinces.add(item.province);
+                if (item.risk && item.risk !== 'ไม่ระบุ') risks.add(item.risk);
+            });
+
+            const sortedProvinces = Array.from(provinces).sort((a,b) => a.localeCompare(b, 'th'));
+            const sortedRisks = Array.from(risks).sort((a,b) => a.localeCompare(b, 'th'));
+
+            provSelect.innerHTML = '<option value="ALL">ทุกจังหวัด</option>';
+            sortedProvinces.forEach(p => {
+                const opt = document.createElement('option');
+                opt.value = p;
+                opt.textContent = p;
+                provSelect.appendChild(opt);
+            });
+
+            riskSelect.innerHTML = '<option value="ALL">ทุกปัจจัยเสี่ยง</option>';
+            sortedRisks.forEach(r => {
+                const opt = document.createElement('option');
+                opt.value = r;
+                opt.textContent = r;
+                riskSelect.appendChild(opt);
+            });
+
+            if (sortedProvinces.includes(currentProv)) provSelect.value = currentProv;
+            if (sortedRisks.includes(currentRisk)) riskSelect.value = currentRisk;
+        }
+
+        function applyFilters() {
+            const startDate = document.getElementById('filter-date-start').value;
+            const endDate = document.getElementById('filter-date-end').value;
+            const selectedProv = document.getElementById('filter-province').value;
+            const selectedRisk = document.getElementById('filter-risk').value;
+
+            filteredData = rawData.filter(item => {
+                if (startDate && item.dateStr !== 'ไม่ระบุ' && item.dateStr < startDate) return false;
+                if (endDate && item.dateStr !== 'ไม่ระบุ' && item.dateStr > endDate) return false;
+                if (selectedProv !== 'ALL' && item.province !== selectedProv) return false;
+                if (selectedRisk !== 'ALL' && item.risk !== selectedRisk) return false;
+                return true;
+            });
+
+            currentPage = 1;
+            updateDashboardMetrics();
+            renderCharts();
+            renderMap();
+            renderTable();
         }
 
         function resetFilters() {
@@ -1333,12 +863,285 @@
 
             const summaryInsightText = document.getElementById('summary-insight-text');
             if (filteredData.length > 0) {
-                summaryInsightText.innerHTML = `จากการเฝ้าระวังพบผู้ป่วยยืนยันทั้งหมด <strong class="text-teal-400 font-semibold">${filteredData.length.toLocaleString('th-TH')} ราย</strong> ` +
-                    `พบการระบาดชุกชุมสูงสุดในพื้นที่ <strong class="text-rose-400 font-semibold">${sortedProvinces[0] ? sortedProvinces[0][0] : '-'}</strong> ` +
-                    `ปัจจัยเสี่ยงหลักในการแพร่กระจายเชื้อได้แก่ <strong class="text-amber-400 font-semibold">${topRiskEntry ? topRiskEntry[0] : '-'}</strong>`;
+                summaryInsightText.innerHTML = `จากการเฝ้าระวังพบผู้ป่วยยืนยันทั้งหมด <strong class="text-teal-600 dark:text-teal-400 font-semibold">${filteredData.length.toLocaleString('th-TH')} ราย</strong> ` +
+                    `พบการระบาดชุกชุมสูงสุดในพื้นที่ <strong class="text-rose-600 dark:text-rose-400 font-semibold">${sortedProvinces[0] ? sortedProvinces[0][0] : '-'}</strong> ` +
+                    `ปัจจัยเสี่ยงหลักในการแพร่กระจายเชื้อได้แก่ <strong class="text-amber-600 dark:text-amber-400 font-semibold">${topRiskEntry ? topRiskEntry[0] : '-'}</strong>`;
             } else {
                 summaryInsightText.textContent = 'ไม่พบข้อมูลตามเงื่อนไขการกรองที่เลือก';
             }
+        }
+
+        function setTheme(mode) {
+            currentThemeMode = mode;
+            localStorage.setItem('themeMode', mode);
+
+            const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const isDark = mode === 'dark' || (mode === 'auto' && systemDark);
+
+            if (isDark) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+
+            const btnLight = document.getElementById('btn-theme-light');
+            const btnDark = document.getElementById('btn-theme-dark');
+            const btnAuto = document.getElementById('btn-theme-auto');
+
+            [btnLight, btnDark, btnAuto].forEach(btn => {
+                if (btn) btn.classList.remove('bg-white', 'dark:bg-slate-800', 'shadow-sm', 'text-teal-600', 'dark:text-teal-400');
+            });
+
+            if (mode === 'light' && btnLight) btnLight.classList.add('bg-white', 'shadow-sm', 'text-teal-600');
+            else if (mode === 'dark' && btnDark) btnDark.classList.add('bg-slate-800', 'shadow-sm', 'text-teal-400');
+            else if (mode === 'auto' && btnAuto) btnAuto.classList.add('bg-white', 'dark:bg-slate-800', 'shadow-sm', 'text-teal-600', 'dark:text-teal-400');
+
+            if (mapInstance) {
+                if (isDark) {
+                    if (lightTileLayer && mapInstance.hasLayer(lightTileLayer)) mapInstance.removeLayer(lightTileLayer);
+                    if (darkTileLayer && !mapInstance.hasLayer(darkTileLayer)) darkTileLayer.addTo(mapInstance);
+                } else {
+                    if (darkTileLayer && mapInstance.hasLayer(darkTileLayer)) mapInstance.removeLayer(darkTileLayer);
+                    if (lightTileLayer && !mapInstance.hasLayer(lightTileLayer)) lightTileLayer.addTo(mapInstance);
+                }
+            }
+
+            renderCharts();
+        }
+
+        function initMap() {
+            const container = document.getElementById('esri-map');
+            if (!container) return;
+
+            if (mapInstance) {
+                mapInstance.remove();
+                mapInstance = null;
+            }
+
+            mapInstance = L.map('esri-map', {
+                center: [13.7563, 100.5018],
+                zoom: 6,
+                zoomControl: true
+            });
+
+            // ESRI ArcGIS Online Basemaps (ไม่ต้องใช้ API Key)
+            darkTileLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+                attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ',
+                maxZoom: 16
+            });
+
+            lightTileLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+                attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, USGS, Esri (Thailand)',
+                maxZoom: 18
+            });
+
+            const isDark = document.documentElement.classList.contains('dark');
+            if (isDark) {
+                darkTileLayer.addTo(mapInstance);
+            } else {
+                lightTileLayer.addTo(mapInstance);
+            }
+
+            mapMarkersLayer = L.layerGroup().addTo(mapInstance);
+
+            // Ensure map container calculates correct non-zero dimensions after DOM render
+            setTimeout(() => {
+                if (mapInstance) mapInstance.invalidateSize();
+            }, 100);
+        }
+
+        function switchMapMode(mode) {
+            currentMapMode = mode;
+
+            const btnHotspot = document.getElementById('btn-map-hotspot');
+            const btnDistrict = document.getElementById('btn-map-district');
+            const btnProvince = document.getElementById('btn-map-province');
+
+            const activeClass = 'bg-rose-600 text-white font-semibold shadow shadow-rose-900/40';
+            const inactiveClass = 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200';
+
+            if (btnHotspot) btnHotspot.className = `px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 ${mode === 'hotspot' ? activeClass : inactiveClass}`;
+            if (btnDistrict) btnDistrict.className = `px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 ${mode === 'district' ? 'bg-teal-600 text-white font-semibold shadow' : inactiveClass}`;
+            if (btnProvince) btnProvince.className = `px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 ${mode === 'province' ? 'bg-indigo-600 text-white font-semibold shadow' : inactiveClass}`;
+
+            renderMap();
+        }
+
+        function renderMap() {
+            if (!mapInstance) initMap();
+            if (!mapInstance) return;
+
+            mapInstance.invalidateSize();
+            const mapSize = mapInstance.getSize();
+
+            // Defer heatmap rendering if map container has not completed initial layout pass (width/height is 0)
+            if (mapSize.x === 0 || mapSize.y === 0) {
+                setTimeout(() => {
+                    if (mapInstance) renderMap();
+                }, 100);
+                return;
+            }
+
+            if (mapMarkersLayer) mapMarkersLayer.clearLayers();
+            if (heatmapLayer) {
+                mapInstance.removeLayer(heatmapLayer);
+                heatmapLayer = null;
+            }
+
+            const legendTitle = document.getElementById('map-legend-title');
+            const legendContent = document.getElementById('map-legend-content');
+
+            if (currentMapMode === 'hotspot') {
+                if (legendTitle) legendTitle.innerHTML = '<i data-lucide="flame" class="w-3.5 h-3.5 text-rose-500"></i><span>Hotspot Density</span>';
+                if (legendContent) {
+                    legendContent.innerHTML = `
+                        <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-red-600 inline-block"></span> <span>ความเสี่ยงสูงมาก (Hotspot)</span></div>
+                        <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-amber-500 inline-block"></span> <span>ความเสี่ยงปานกลาง</span></div>
+                        <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-teal-400 inline-block"></span> <span>ความเสี่ยงต่ำ</span></div>
+                    `;
+                }
+
+                const heatPoints = filteredData.map(d => [d.lat, d.lng, 1]);
+                if (typeof L.heatLayer === 'function' && heatPoints.length > 0) {
+                    try {
+                        heatmapLayer = L.heatLayer(heatPoints, {
+                            radius: 25,
+                            blur: 18,
+                            maxZoom: 12,
+                            gradient: { 0.4: '#14b8a6', 0.65: '#f59e0b', 1.0: '#f43f5e' }
+                        }).addTo(mapInstance);
+                    } catch (err) {
+                        console.warn('Leaflet heatmap render postponed:', err);
+                    }
+                }
+
+                calculateHotspotZScores();
+
+            } else if (currentMapMode === 'district') {
+                if (legendTitle) legendTitle.innerHTML = '<i data-lucide="crosshair" class="w-3.5 h-3.5 text-teal-500"></i><span>จุดเกิดโรครายเคส</span>';
+                if (legendContent) {
+                    legendContent.innerHTML = `
+                        <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-teal-500 inline-block"></span> <span>เคสยืนยันในอำเภอ/เขต</span></div>
+                    `;
+                }
+
+                filteredData.slice(0, 500).forEach(d => {
+                    const marker = L.circleMarker([d.lat, d.lng], {
+                        radius: 5,
+                        fillColor: '#14b8a6',
+                        color: '#0f766e',
+                        weight: 1,
+                        opacity: 0.9,
+                        fillOpacity: 0.7
+                    });
+
+                    marker.bindPopup(`
+                        <div class="p-1 space-y-1">
+                            <div class="font-bold text-teal-400 text-sm">${d.province} - ${d.district}</div>
+                            <div class="text-xs text-slate-300">วันที่: <span class="text-white">${d.dateStr}</span></div>
+                            <div class="text-xs text-slate-300">เพศ/อายุ: <span class="text-white">${d.gender}, ${d.age !== null ? d.age + ' ปี' : 'ไม่ระบุ'}</span></div>
+                            <div class="text-xs text-slate-300">ปัจจัยเสี่ยง: <span class="text-amber-300">${d.risk}</span></div>
+                        </div>
+                    `);
+
+                    mapMarkersLayer.addLayer(marker);
+                });
+
+            } else if (currentMapMode === 'province') {
+                if (legendTitle) legendTitle.innerHTML = '<i data-lucide="globe-2" class="w-3.5 h-3.5 text-indigo-500"></i><span>ขนาดสัดส่วนรายจังหวัด</span>';
+                if (legendContent) {
+                    legendContent.innerHTML = `
+                        <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-indigo-500/80 border border-indigo-300 inline-block"></span> <span>สัดส่วนเคสสะสม</span></div>
+                    `;
+                }
+
+                const countsByProv = {};
+                filteredData.forEach(d => {
+                    countsByProv[d.province] = (countsByProv[d.province] || 0) + 1;
+                });
+
+                Object.entries(countsByProv).forEach(([prov, count]) => {
+                    const coords = PROVINCE_COORDS[prov] || [13.7563, 100.5018];
+                    const radius = Math.min(Math.max(Math.sqrt(count) * 4, 8), 40);
+
+                    const marker = L.circleMarker(coords, {
+                        radius: radius,
+                        fillColor: '#6366f1',
+                        color: '#818cf8',
+                        weight: 2,
+                        opacity: 0.9,
+                        fillOpacity: 0.6
+                    });
+
+                    marker.bindPopup(`
+                        <div class="p-1">
+                            <div class="font-bold text-indigo-400 text-sm">${prov}</div>
+                            <div class="text-xs text-slate-200 mt-1">ผู้ป่วยสะสม: <strong class="text-amber-400">${count.toLocaleString('th-TH')} ราย</strong></div>
+                        </div>
+                    `);
+
+                    mapMarkersLayer.addLayer(marker);
+                });
+            }
+
+            if (window.lucide) lucide.createIcons();
+        }
+
+        function calculateHotspotZScores() {
+            const districtCounts = {};
+            let unmappedCount = 0;
+
+            filteredData.forEach(d => {
+                if (!d.province || d.province === 'ไม่ระบุ') {
+                    unmappedCount++;
+                    return;
+                }
+                const key = `${d.province}_${d.district}`;
+                districtCounts[key] = (districtCounts[key] || 0) + 1;
+            });
+
+            const unmappedBadge = document.getElementById('unmapped-count-badge');
+            if (unmappedBadge) {
+                if (unmappedCount > 0) {
+                    unmappedBadge.textContent = `ไม่ระบุพื้นที่ ${unmappedCount.toLocaleString('th-TH')} ราย`;
+                    unmappedBadge.classList.remove('hidden');
+                } else {
+                    unmappedBadge.classList.add('hidden');
+                }
+            }
+
+            const counts = Object.values(districtCounts);
+            if (counts.length === 0) {
+                document.getElementById('hs-top-area').textContent = '-';
+                document.getElementById('hs-top-score').textContent = 'Z-Score: 0.00';
+                document.getElementById('hs-avg-density').textContent = '0 เคส/พื้นที่';
+                document.getElementById('hs-std-dev').textContent = 'ค่าเบี่ยงเบนมาตรฐาน (σ): 0.00';
+                document.getElementById('hotspot-count-badge').textContent = 'พบ 0 พื้นที่ Hotspot';
+                return;
+            }
+
+            const mean = counts.reduce((a, b) => a + b, 0) / counts.length;
+            const variance = counts.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / counts.length;
+            const stdDev = Math.sqrt(variance) || 1;
+
+            let hotspotCount = 0;
+            let topDistrict = '-';
+            let maxZ = -Infinity;
+
+            Object.entries(districtCounts).forEach(([distKey, count]) => {
+                const zScore = (count - mean) / stdDev;
+                if (zScore >= 1.65) hotspotCount++;
+                if (zScore > maxZ) {
+                    maxZ = zScore;
+                    topDistrict = distKey.replace('_', ' - ');
+                }
+            });
+
+            document.getElementById('hs-top-area').textContent = topDistrict;
+            document.getElementById('hs-top-score').textContent = `Z-Score: ${maxZ > -Infinity ? maxZ.toFixed(2) : '0.00'}`;
+            document.getElementById('hs-avg-density').textContent = `${mean.toFixed(1)} เคส/พื้นที่`;
+            document.getElementById('hs-std-dev').textContent = `ค่าเบี่ยงเบนมาตรฐาน (σ): ${stdDev.toFixed(2)}`;
+            document.getElementById('hotspot-count-badge').textContent = `พบ ${hotspotCount} พื้นที่ Hotspot`;
         }
 
         function renderCharts() {
@@ -1546,12 +1349,14 @@
 
         function renderTable() {
             const tbody = document.getElementById('table-body');
+            if (!tbody) return;
             tbody.innerHTML = '';
 
             let searchFiltered = filteredData;
             if (searchQuery) {
                 searchFiltered = filteredData.filter(d => 
                     d.province.toLowerCase().includes(searchQuery) ||
+                    d.district.toLowerCase().includes(searchQuery) ||
                     d.risk.toLowerCase().includes(searchQuery) ||
                     d.gender.toLowerCase().includes(searchQuery) ||
                     d.dateStr.includes(searchQuery)
@@ -1566,57 +1371,136 @@
             const pageData = searchFiltered.slice(startIdx, startIdx + pageSize);
 
             if (pageData.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="py-6 text-center text-slate-500">ไม่พบรายการข้อมูลตามเงื่อนไข</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="7" class="py-6 text-center text-slate-500">ไม่พบรายการข้อมูลตามเงื่อนไข</td></tr>`;
             } else {
                 pageData.forEach((row, idx) => {
                     const tr = document.createElement('tr');
-                    tr.className = 'hover:bg-slate-800/80 transition-colors';
+                    tr.className = 'hover:bg-slate-100 dark:hover:bg-slate-800/80 transition-colors';
                     tr.innerHTML = `
                         <td class="py-3 px-4 text-slate-400 font-mono">${startIdx + idx + 1}</td>
-                        <td class="py-3 px-4 font-medium text-slate-200">${row.dateStr}</td>
+                        <td class="py-3 px-4 font-medium text-slate-800 dark:text-slate-200">${row.dateStr}</td>
                         <td class="py-3 px-4">
-                            <span class="px-2 py-0.5 rounded-md text-[11px] font-medium ${row.gender.includes('ชาย') ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' : 'bg-pink-500/10 text-pink-400 border border-pink-500/20'}">
+                            <span class="px-2 py-0.5 rounded-md text-[11px] font-medium ${row.gender.includes('ชาย') ? 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20' : 'bg-pink-500/10 text-pink-600 dark:text-pink-400 border border-pink-500/20'}">
                                 ${row.gender}
                             </span>
                         </td>
                         <td class="py-3 px-4">${row.age !== null ? row.age + ' ปี' : 'ไม่ระบุ'}</td>
-                        <td class="py-3 px-4 font-semibold text-slate-200">${row.province}</td>
-                        <td class="py-3 px-4 text-slate-300">${row.risk}</td>
+                        <td class="py-3 px-4 font-semibold text-slate-800 dark:text-slate-200">${row.province}</td>
+                        <td class="py-3 px-4 text-teal-600 dark:text-teal-400 font-medium">${row.district}</td>
+                        <td class="py-3 px-4 text-slate-600 dark:text-slate-300">${row.risk}</td>
                     `;
                     tbody.appendChild(tr);
                 });
             }
 
-            document.getElementById('table-pagination-info').textContent = 
-                `แสดง ${total > 0 ? startIdx + 1 : 0} - ${Math.min(startIdx + pageSize, total)} จากทั้งหมด ${total.toLocaleString('th-TH')} รายการ`;
+            const infoElem = document.getElementById('table-pagination-info');
+            if (infoElem) {
+                infoElem.textContent = `แสดง ${total > 0 ? startIdx + 1 : 0} - ${Math.min(startIdx + pageSize, total)} จากทั้งหมด ${total.toLocaleString('th-TH')} รายการ`;
+            }
 
             renderPaginationControls(totalPages);
         }
 
         function renderPaginationControls(totalPages) {
             const container = document.getElementById('table-pagination-controls');
+            if (!container) return;
             container.innerHTML = '';
 
             const prevBtn = document.createElement('button');
-            prevBtn.className = `p-1.5 rounded-lg border border-slate-700 ${currentPage === 1 ? 'opacity-40 cursor-not-allowed' : 'hover:bg-slate-700 text-slate-300'}`;
+            prevBtn.className = `p-1.5 rounded-lg border border-slate-300 dark:border-slate-700 ${currentPage === 1 ? 'opacity-40 cursor-not-allowed' : 'hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300'}`;
             prevBtn.innerHTML = '<i data-lucide="chevron-left" class="w-4 h-4"></i>';
             prevBtn.disabled = currentPage === 1;
             prevBtn.onclick = () => { if (currentPage > 1) { currentPage--; renderTable(); } };
             container.appendChild(prevBtn);
 
             const pageIndicator = document.createElement('span');
-            pageIndicator.className = 'px-3 py-1 text-slate-300 font-mono font-medium';
+            pageIndicator.className = 'px-3 py-1 text-slate-700 dark:text-slate-300 font-mono font-medium';
             pageIndicator.textContent = `${currentPage} / ${totalPages}`;
             container.appendChild(pageIndicator);
 
             const nextBtn = document.createElement('button');
-            nextBtn.className = `p-1.5 rounded-lg border border-slate-700 ${currentPage === totalPages ? 'opacity-40 cursor-not-allowed' : 'hover:bg-slate-700 text-slate-300'}`;
+            nextBtn.className = `p-1.5 rounded-lg border border-slate-300 dark:border-slate-700 ${currentPage === totalPages ? 'opacity-40 cursor-not-allowed' : 'hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300'}`;
             nextBtn.innerHTML = '<i data-lucide="chevron-right" class="w-4 h-4"></i>';
             nextBtn.disabled = currentPage === totalPages;
             nextBtn.onclick = () => { if (currentPage < totalPages) { currentPage++; renderTable(); } };
             container.appendChild(nextBtn);
 
             if (window.lucide) lucide.createIcons();
+        }
+
+        function updateStatusSuccess(count) {
+            const statusDot = document.getElementById('status-dot');
+            const lastUpdateText = document.getElementById('last-update-text');
+            const refreshIcon = document.getElementById('refresh-icon');
+
+            if (refreshIcon) refreshIcon.classList.remove('animate-spin');
+            if (statusDot) statusDot.className = 'w-2 h-2 rounded-full bg-emerald-400';
+            if (lastUpdateText) {
+                const now = new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
+                lastUpdateText.textContent = `เชื่อมต่อ Google Sheets สำเร็จ (${count.toLocaleString('th-TH')} รายการ) • ${now} น.`;
+            }
+        }
+
+        function fetchAndProcessData() {
+            const statusDot = document.getElementById('status-dot');
+            const lastUpdateText = document.getElementById('last-update-text');
+            const refreshIcon = document.getElementById('refresh-icon');
+
+            if (refreshIcon) refreshIcon.classList.add('animate-spin');
+            if (statusDot) statusDot.className = 'w-2 h-2 rounded-full bg-amber-400 animate-pulse';
+            if (lastUpdateText) lastUpdateText.textContent = 'กำลังโหลดข้อมูลจาก Google Sheets...';
+
+            if (typeof google !== 'undefined' && google.script && google.script.run) {
+                google.script.run
+                    .withSuccessHandler(function(csvText) {
+                        if (csvText) {
+                            Papa.parse(csvText, {
+                                header: true,
+                                skipEmptyLines: true,
+                                complete: function(results) {
+                                    if (results && results.data && results.data.length > 0) {
+                                        rawData = normalizeDataset(results.data);
+                                        populateFilterOptions(rawData);
+                                        applyFilters();
+                                        updateStatusSuccess(results.data.length);
+                                    } else {
+                                        useFallbackDataset();
+                                    }
+                                },
+                                error: function() {
+                                    useFallbackDataset();
+                                }
+                            });
+                        } else {
+                            useFallbackDataset();
+                        }
+                    })
+                    .withFailureHandler(function() {
+                        useFallbackDataset();
+                    })
+                    .fetchCsvData();
+                return;
+            }
+
+            Papa.parse(CSV_URL, {
+                download: true,
+                header: true,
+                skipEmptyLines: true,
+                complete: function(results) {
+                    if (results && results.data && results.data.length > 0) {
+                        rawData = normalizeDataset(results.data);
+                        populateFilterOptions(rawData);
+                        applyFilters();
+                        updateStatusSuccess(results.data.length);
+                    } else {
+                        useFallbackDataset();
+                    }
+                },
+                error: function(err) {
+                    console.warn('Google Sheets Direct CSV Fetch Error, using Fallback Demo Data:', err);
+                    useFallbackDataset();
+                }
+            });
         }
 
         function useFallbackDataset() {
@@ -1626,10 +1510,19 @@
 
             if (refreshIcon) refreshIcon.classList.remove('animate-spin');
             if (statusDot) statusDot.className = 'w-2 h-2 rounded-full bg-indigo-400';
-            if (lastUpdateText) lastUpdateText.textContent = 'แสดงข้อมูลตัวอย่าง (Demo Mode)';
+            if (lastUpdateText) lastUpdateText.textContent = 'แสดงข้อมูลตัวอย่างระบบเฝ้าระวัง (Demo Mode)';
 
-            const provinces = ['กรุงเทพมหานคร', 'นนทบุรี', 'เชียงใหม่', 'ชลบุรี', 'ภูเก็ต', 'ขอนแก่น', 'สงขลา'];
-            const districts = ['เมือง', 'สายไหม', 'บางเขน', 'ศรีราชา', 'แม่ริม', 'หาดใหญ่', 'คลองหลวง'];
+            const samples = [
+                { prov: 'กรุงเทพมหานคร', dist: 'เขตบางเขน' },
+                { prov: 'กรุงเทพมหานคร', dist: 'เขตจตุจักร' },
+                { prov: 'กรุงเทพมหานคร', dist: 'เขตสายไหม' },
+                { prov: 'กาฬสินธุ์', dist: 'ยางตลาด' },
+                { prov: 'กาฬสินธุ์', dist: 'เมืองกาฬสินธุ์' },
+                { prov: 'ขอนแก่น', dist: 'เมืองขอนแก่น' },
+                { prov: 'ขอนแก่น', dist: 'บ้านไผ่' },
+                { prov: 'เชียงใหม่', dist: 'แม่ริม' },
+                { prov: 'ชลบุรี', dist: 'ศรีราชา' }
+            ];
             const risks = ['สัมผัสผู้ป่วยยืนยัน', 'ไปสถานที่แออัด', 'ระบาดในชุมชน', 'อาชีพเสี่ยง', 'อยู่ระหว่างสอบสวน'];
             const genders = ['ชาย', 'หญิง'];
 
@@ -1640,11 +1533,12 @@
                 const pastDays = Math.floor(Math.random() * 30);
                 const d = new Date(today);
                 d.setDate(d.getDate() - pastDays);
+                const sampleLoc = samples[Math.floor(Math.random() * samples.length)];
 
                 simulated.push({
                     announce_date: d.toISOString().split('T')[0],
-                    province: provinces[Math.floor(Math.random() * provinces.length)],
-                    district_of_onset: districts[Math.floor(Math.random() * districts.length)],
+                    province_of_onset: sampleLoc.prov,
+                    district_of_onset: sampleLoc.dist,
                     sex: genders[Math.floor(Math.random() * genders.length)],
                     age: Math.floor(Math.random() * 70) + 5,
                     risk: risks[Math.floor(Math.random() * risks.length)]
@@ -1678,6 +1572,32 @@
             a.click();
             document.body.removeChild(a);
         }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            if (window.lucide) lucide.createIcons();
+
+            setTheme(currentThemeMode);
+            initMap();
+
+            window.addEventListener('resize', () => {
+                if (mapInstance) {
+                    mapInstance.invalidateSize();
+                }
+            });
+
+            document.getElementById('filter-date-start')?.addEventListener('change', applyFilters);
+            document.getElementById('filter-date-end')?.addEventListener('change', applyFilters);
+            document.getElementById('filter-province')?.addEventListener('change', applyFilters);
+            document.getElementById('filter-risk')?.addEventListener('change', applyFilters);
+
+            document.getElementById('table-search')?.addEventListener('input', (e) => {
+                searchQuery = e.target.value.toLowerCase().trim();
+                currentPage = 1;
+                renderTable();
+            });
+
+            fetchAndProcessData();
+        });
     </script>
 </body>
 </html>
